@@ -5,4 +5,12 @@ var app = angular.module("theApp", []);
 app.controller("theController", ["$scope","$http", function($scope,$http){
     console.log('Welcome to a new start. Happy coding. Yours Truly, UniConStudios.');
     $scope.test = 'This is a successful angular test. If you see this $scope is working!'
+
+    var ws = new WSConnection($scope);
+    function sendWeee(){
+        ws.send('weee');
+    }
+    setTimeout(sendWeee,1000);
+
+
 }]);
