@@ -1,3 +1,6 @@
+/**
+ * Created by John on 6/21/2015.
+ */
 
 var chance = new Chance();
 
@@ -53,21 +56,24 @@ function Operator(name){
     var self = this;
 
     self.bid = new BaseID('operator',name);
+    self.collectRate = 1000;
     //self.pos = new BasePosition(0,0,0,'');
 
-    self.baseCap = 1000;
+    self.baseCap = 10000;
 
     self.compressedData = 0;
     self.compressedDataCap = 10;
 
-    self.custom = {
-        baseCap: 1000,
-        inventory: {},
-        bits: 5000,
-        bitCap: 1000,
-        researchPoints: 0,
-        researchCap: 1000
-    };
+    self.inventory = {};
+
+    self.research = [0,self.baseCap];
+    self.bits = [5000,self.baseCap];
+    self.data = [0,self.baseCap];
+
+    //self.bits = 5000;
+    //self.bitCap = 1000;
+    self.researchPoints = 0;
+    self.researchCap = 1000;
 
     //REGISTRY.operators.push(self);
 
@@ -87,8 +93,8 @@ function Stack(name){
     self.bits = 0;
     self.bitCap = self.baseCap;
 
-    self.water = 0;
-    self.waterCap = self.baseCap;
+    self.coolant = 0;
+    self.coolantCap = self.baseCap;
 
     self.rawData = 0;
     self.dataCap = self.baseCap;
@@ -106,22 +112,234 @@ function Floor(name){
     self.rooms = []
 }
 
-function Room(name,type){
-    var self = this;
+function generateOutputCapacityCheck(generator){
+    var generatesLength = generator.generates.length;
+    if(generatesLength > 0){
+        for(var i = 0; i < generatesLength; ++i){
+            var params = generator.generates[i];
+            var resource = params[0];
 
-    self.bid = new BaseID('room',name);
+            if(generator[resource][0] !== generator[resource][1]){
+                return true;
+            }
+        }
+        return false;
+    }
+}
 
-    self.roomType = type || 'generic';
+function generate(generator){
+    var generatesLength = generator.generates.length;
+    if(generatesLength > 0){
+        for(var i = 0; i < generatesLength; ++i){
+            var params = generator.generates[i];
+            var resource = params[0];
 
+            if(generator[resource][0] < generator[resource][1]){
+                generator[resource][0] += params[1];
+            }
+        }
+    }
+}
+
+function cycleCostCheck(generator){
+    var cycleCostLength = generator.cycleCosts.length;
+
+    if(cycleCostLength > 0){
+        for(var i = 0; i < cycleCostLength; ++i){
+            var params = generator.cycleCosts[i];
+            var resource = params[0];
+            if(generator[resource][0] < params[1]){
+                return false
+            }
+        }
+        return true;
+    } else {
+        return true;
+    }
+}
+
+function cycleCostPay(generator){
+    var cycleCostLength = generator.cycleCosts.length;
+
+    if(cycleCostLength > 0){
+        for(var i = 0; i < cycleCostLength; ++i){
+            var params = generator.cycleCosts[i];
+            var resource = params[0];
+            generator[resource][0] -= params[1];
+        }
+    }
+}
+
+
+function pushOut(origin){
+    var pushDirectionsLength = origin.pushDirections.length;
+
+    if(pushDirectionsLength > 0){
+        for(var i = 0; i < pushDirectionsLength; ++i){
+            var params = origin.pushDirections[i];
+
+            var resource = params[0];
+            var direction = params[1];
+            var rate = origin.pushRate;
+
+            var destination = getNeighbors(origin.iStack,origin.iFloor,origin.iRoom)[direction];
+
+            if(destination && origin[resource][0] >= rate){ // improve this so it drains remaining amount
+                if(destination[resource] && destination[resource][0] < destination[resource][1]){
+                    origin[resource][0] -= rate;
+                    destination[resource][0] += rate;
+                }
+            }
+
+        }
+    }
+}
+
+function collect(source,type,operator){
+    var collectRate = operator.collectRate;
+    var resourceValue = source[type][0];
+    var resourceMax = source[type][1];
+
+    if(source && type){
+        console.log(resourceValue);
+        console.log(type);
+        console.log(operator);
+        if(resourceValue > 0){ // greater than 0
+
+            if(resourceValue < collectRate){ // but less than collect rate
+                console.log('collect bits');
+                source[type][0] -= resourceValue;
+                operator[type][0] += resourceValue;
+            }
+            if(resourceValue >= collectRate){
+                source[type][0] -= collectRate;
+                operator[type][0] += collectRate;
+            }
+        }
+    }
 }
 
 function buy(cost){
     var op = ClientObjects.operator;
-    if(op.custom.bits >= cost){
-        op.custom.bits -= cost;
+    if(op.bits[0] >= cost){
+        op.bits[0] -= cost;
         return true;
     } else {
         return false;
+    }
+}
+
+function Room(name){
+    var self = this;
+
+    self.bid = new BaseID('room',name);
+
+    self.roomType = 'generic';
+
+    self.pushRate = 5;
+    self.pullRate = 5;
+    self.collectRate = 1000;
+
+    self.iStack = '';
+    self.iFloor = '';
+    self.iRoom = '';
+
+    //self.bits = [0,0];
+    //self.heat = [0,0];
+    //self.coolant = [0,0];
+    //self.power = [0,0];
+    //self.data = [0,0];
+
+    self.generates = [];
+    self.cycleCosts = [];
+    self.pushDirections = [];
+
+    self.cycle = function(){
+        var affordable = cycleCostCheck(self);
+        var notFull = generateOutputCapacityCheck(self);
+
+        if(affordable && notFull){
+            cycleCostPay(self);
+            generate(self);
+        }
+
+        pushOut(self);
+    }
+
+}
+
+function changeRoomType(room,type){
+    var defaultCap = 1000;
+    if(buy(250)){
+        room.roomType = type;
+
+        //room.power[1] = defaultCap;
+        //room.coolant[1] = defaultCap;
+        //room.heat[1] = defaultCap;
+
+        room.power = [0,defaultCap];
+        room.coolant = [0,defaultCap];
+        room.heat = [0,defaultCap];
+
+        switch(type){
+            case 'lobby':
+                room.bits = [0,defaultCap];
+
+                room.generates.push(['power',1]);
+                room.generates.push(['coolant',1]);
+                room.generates.push(['bits',1]);
+
+                room.pushDirections.push(['power','right']);
+                room.pushDirections.push(['power','left']);
+                room.pushDirections.push(['power','down']);
+                room.pushDirections.push(['power','up']);
+
+                room.pushDirections.push(['coolant','right']);
+                room.pushDirections.push(['coolant','left']);
+                room.pushDirections.push(['coolant','down']);
+                room.pushDirections.push(['coolant','up']);
+                break;
+            case 'power':
+                room.generates.push(['power',1]);
+                room.generates.push(['heat',1]);
+
+                room.pushDirections.push(['power','right']);
+                room.pushDirections.push(['power','left']);
+                room.pushDirections.push(['power','down']);
+                room.pushDirections.push(['power','up']);
+                break;
+            case 'coolant':
+                room.generates.push(['coolant',1]);
+
+                room.cycleCosts.push(['power',2]);
+
+                room.pushDirections.push(['coolant','right']);
+                room.pushDirections.push(['coolant','left']);
+                room.pushDirections.push(['coolant','down']);
+                room.pushDirections.push(['coolant','up']);
+                break;
+            case 'bitMiner':
+                room.bits = [0,defaultCap];
+
+                room.cycleCosts.push(['power',2]);
+
+                room.generates.push(['bits',1]);
+                break;
+            case 'dataMiner':
+                room.data = [0,defaultCap];
+
+                room.cycleCosts.push(['power',2]);
+
+                room.generates.push(['data',1]);
+                break;
+            case 'powerCell':
+                room.power[1] = 10000;
+                room.pushDirections.push({
+                    params: ['power',2],
+                    direction: 'right'
+                });
+        }
+
     }
 }
 
@@ -169,11 +387,7 @@ function addOperator(user,name){
 
 
 
-function changeRoomType(room,type){
-    if(buy(250)){
-        room.roomType = type;
-    }
-}
+
 
 function getPercent(min,max){
     return (min/max).toFixed(2)*100;
@@ -196,7 +410,7 @@ function fetchLocation(iStack,iFloor,iRoom){
         }
     }
 
-    return room || floor || stack;
+    return room || false;
 }
 
 function getNeighbors(iStack,iFloor,iRoom){
@@ -224,10 +438,10 @@ function getNeighbors(iStack,iFloor,iRoom){
     })();
 
     return {
-        up: up ? up.roomType : false,
-        right: right ? right.roomType : false,
-        down: down ? down.roomType : false,
-        left: left ? left.roomType : false
+        up: up ? up : false,
+        right: right ? right : false,
+        down: down ? down : false,
+        left: left ? left : false
     };
 }
 
@@ -243,7 +457,7 @@ function EdenObjects(){
     //addFloor(self.stack0);
     //addRoom(self.stack0.floors[0],'bitMiner');
     //addRoom(self.stack0.floors[0],'power');
-    //addRoom(self.stack0.floors[0],'water');
+    //addRoom(self.stack0.floors[0],'coolant');
     //addFloor(self.stack0);
     //addRoom(self.stack0.floors[1],'power');
     //addRoom(self.stack0.floors[1],'bitMiner');
@@ -253,7 +467,7 @@ function EdenObjects(){
     //addFloor(self.stack1, 'Floor 0');
     //addRoom(self.stack1.floors[0],'power');
     //addRoom(self.stack1.floors[0],'bitMiner');
-    //addRoom(self.stack1.floors[0],'water');
+    //addRoom(self.stack1.floors[0],'coolant');
     //addRoom(self.stack1.floors[0],'power');
 
     //self.operator1 = new Operator();
@@ -265,25 +479,30 @@ function checkStack(stacks,debug){
     $.each(stacks,function(iStack,stack){
         var stackCapBonus = 0;
         var powerCapBonus = 0,
-            waterCapBonus = 0,
+            coolantCapBonus = 0,
             dataCapBonus = 0;
         $.each(stack.floors,function(iFloor,floor){
             $.each(floor.rooms,function(iRoom,room){
+                room.iStack = iStack;
+                room.iFloor = iFloor;
+                room.iRoom = iRoom;
+                room.cycle();
+
                 if(debug){
                     console.log('room found in stack ' + iStack + ' floor ' + iFloor + ' position ' + iRoom + ' of type: ' + room.roomType);
                 }
                 if(stack.power >= 0){
-                    if(room.roomType === 'bitMiner' && (op.custom.bits < op.custom.bitCap)){
+                    if(room.roomType === 'bitMiner' && (op.bits < op.bitCap)){
                         stack.power--;
-                        op.custom.bits++;
+                        op.bits++;
                     }
                     if(room.roomType === 'dataMiner' && (stack.rawData < stack.dataCap)){
                         stack.power--;
                         stack.rawData++;
                     }
-                    if(room.roomType === 'water' && (stack.water < stack.waterCap)){
+                    if(room.roomType === 'coolant' && (stack.coolant < stack.coolantCap)){
                         stack.power--;
-                        stack.water++;
+                        stack.coolant++;
                     }
                 }
 
@@ -295,8 +514,8 @@ function checkStack(stacks,debug){
                     case 'powerBank':
                         powerCapBonus += 1000;
                         break;
-                    case 'waterTank':
-                        waterCapBonus += 1000;
+                    case 'coolantTank':
+                        coolantCapBonus += 1000;
                         break;
                     case 'diskSpace':
                         dataCapBonus += 1000;
@@ -316,29 +535,16 @@ function checkStack(stacks,debug){
             });
         });
         stack.powerCap = stack.baseCap + stackCapBonus + powerCapBonus;
-        stack.waterCap = stack.baseCap + stackCapBonus + waterCapBonus;
+        stack.coolantCap = stack.baseCap + stackCapBonus + coolantCapBonus;
         stack.dataCap = stack.baseCap + stackCapBonus + dataCapBonus;
-        op.custom.bitCap = op.custom.baseCap + bitCapBonus;
+        op.bitCap = op.baseCap + bitCapBonus;
 
     });
 }
 
-window.ClientObjects = new EdenObjects()
-
-/// Creates Angular App "theApp" as "app"
+window.ClientObjects = new EdenObjects();
 var app = angular.module("theApp", []);
-
-/// Creates "theApp" controller "theController"
-app.controller("theController", ["$scope","$http", function($scope,$http){
-    console.log('Welcome to a new start. Happy coding. Yours Truly, UniConStudios.');
-    $scope.test = 'This is a successful angular test. If you see this $scope is working!'
-
-    var ws = new WSConnection($scope);
-    function sendWeee(){
-        ws.send('weee');
-    }
-    setTimeout(sendWeee,1000);
-
+app.controller("theController", ["$scope","$http", function ($scope,$http) {
     $scope.stuff = window.ClientObjects;
     $scope.registry = REGISTRY;
 
@@ -348,6 +554,9 @@ app.controller("theController", ["$scope","$http", function($scope,$http){
     $scope.changeRoomType = changeRoomType;
     $scope.getPercent = getPercent;
     $scope.compressData = compressData;
+    $scope.collectBits = function(source,operator){
+        collect(source,'bits',operator);
+    };
 
     var Game = { };
     Game.fps = 100; // 50 default
@@ -356,8 +565,6 @@ app.controller("theController", ["$scope","$http", function($scope,$http){
     };
 
     Game.update = function(){
-        console.log('tick');
-        //if ($scope.registry) $scope.registry.stacks[0].power++
         checkStack($scope.registry.stacks);
         $scope.$apply();
     };
@@ -382,6 +589,5 @@ app.controller("theController", ["$scope","$http", function($scope,$http){
 
 // Start the game loop
     Game._intervalId = setInterval(Game.run, 0);
-
 
 }]);
