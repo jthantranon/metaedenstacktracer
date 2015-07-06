@@ -119,7 +119,7 @@ function generateOutputCapacityCheck(generator){
             var params = generator.generates[i];
             var resource = params[0];
 
-            if(generator[resource][0] !== generator[resource][1]){
+            if(generator.resources[resource] && generator.resources[resource][0] !== generator.resources[resource][1]){
                 return true;
             }
         }
@@ -134,8 +134,8 @@ function generate(generator){
             var params = generator.generates[i];
             var resource = params[0];
 
-            if(generator[resource][0] < generator[resource][1]){
-                generator[resource][0] += params[1];
+            if(generator.resources[resource] && generator.resources[resource][0] < generator.resources[resource][1]){
+                generator.resources[resource][0] += params[1];
             }
         }
     }
@@ -148,7 +148,7 @@ function cycleCostCheck(generator){
         for(var i = 0; i < cycleCostLength; ++i){
             var params = generator.cycleCosts[i];
             var resource = params[0];
-            if(generator[resource][0] < params[1]){
+            if(generator.resources[resource][0] < params[1]){
                 return false
             }
         }
@@ -165,40 +165,85 @@ function cycleCostPay(generator){
         for(var i = 0; i < cycleCostLength; ++i){
             var params = generator.cycleCosts[i];
             var resource = params[0];
-            generator[resource][0] -= params[1];
+            generator.resources[resource][0] -= params[1];
         }
     }
 }
 
 
-function pushOut(origin){
-    var pushDirectionsLength = origin.pushDirections.length;
+//function pushOut(origin){
+//    var pushDirectionsLength = origin.pushDirections.length;
+//
+//    if(pushDirectionsLength > 0){
+//        for(var i = 0; i < pushDirectionsLength; ++i){
+//            var params = origin.pushDirections[i];
+//
+//            var resource = params[0];
+//            var direction = params[1];
+//            var rate = origin.pushRate;
+//
+//            var destination = getNeighbors(origin.iStack,origin.iFloor,origin.iRoom)[direction];
+//
+//            if(destination && origin[resource][0] >= rate){ // improve this so it drains remaining amount
+//                if(destination[resource] && destination[resource][0] < destination[resource][1]){
+//                    origin[resource][0] -= rate;
+//                    destination[resource][0] += rate;
+//                }
+//            }
+//
+//        }
+//    }
+//}
 
-    if(pushDirectionsLength > 0){
-        for(var i = 0; i < pushDirectionsLength; ++i){
-            var params = origin.pushDirections[i];
+function transfer(resource,source,destination){
+    // untested, transferRate should come out to which ever is lesser (the bottleneck)
 
-            var resource = params[0];
-            var direction = params[1];
-            var rate = origin.pushRate;
+    var sourceValue = source.resources[resource] ? source.resources[resource][0] : false;
 
-            var destination = getNeighbors(origin.iStack,origin.iFloor,origin.iRoom)[direction];
+    if(sourceValue){
+        var transferRate = source.transferRate <= destination.transferRate ?
+            source.transferRate : destination.transferRate;
 
-            if(destination && origin[resource][0] >= rate){ // improve this so it drains remaining amount
-                if(destination[resource] && destination[resource][0] < destination[resource][1]){
-                    origin[resource][0] -= rate;
-                    destination[resource][0] += rate;
+
+        var destinationValue = destination.resources[resource][0];
+        var destinationMax = destination.resources[resource][1];
+
+        var attemptedTransferAmount = transferRate <= sourceValue ? transferRate : sourceValue;
+        var destinationAvailableSpace = destinationMax - destinationValue;
+        var actualTransferAmount = attemptedTransferAmount <= destinationAvailableSpace ? attemptedTransferAmount : destinationAvailableSpace;
+
+        source.resources[resource][0] -= actualTransferAmount;
+        destination.resources[resource][0] += actualTransferAmount;
+    }
+}
+
+function pullIn(origin){
+    var pullTypesLength = origin.pullTypes.length;
+
+    if(pullTypesLength > 0){
+        var neighbors = getNeighbors(origin.iStack,origin.iFloor,origin.iRoom);
+
+        for(var i = 0; i < pullTypesLength; ++i){
+            var type = origin.pullTypes[i];
+            //var rate = origin.pullRate;
+            //var originType = origin.resources[type];
+
+            for (var direction in neighbors) {
+                if (neighbors.hasOwnProperty(direction)) {
+                    var neighbor = neighbors[direction];
+                    if(neighbor) transfer(type,neighbor,origin);
                 }
             }
 
         }
     }
+
 }
 
 function collect(source,type,operator){
     var collectRate = operator.collectRate;
-    var resourceValue = source[type][0];
-    var resourceMax = source[type][1];
+    var resourceValue = source.resources[type][0];
+    var resourceMax = source.resources[type][1];
 
     if(source && type){
         console.log(resourceValue);
@@ -208,11 +253,11 @@ function collect(source,type,operator){
 
             if(resourceValue < collectRate){ // but less than collect rate
                 console.log('collect bits');
-                source[type][0] -= resourceValue;
+                source.resources[type][0] -= resourceValue;
                 operator[type][0] += resourceValue;
             }
             if(resourceValue >= collectRate){
-                source[type][0] -= collectRate;
+                source.resources[type][0] -= collectRate;
                 operator[type][0] += collectRate;
             }
         }
@@ -229,6 +274,23 @@ function buy(cost){
     }
 }
 
+function isOverheated(self){
+    return self.resources.heat ? self.resources.heat[0] === self.resources.heat[1] : false;
+}
+
+function manageHeat(self){
+    //var coolant = self.resources.coolant ? self.resources.coolant : false;
+    //var heat = self.resources.heat ? self.resources.heat : false;
+    if(self.resources.heat && self.resources.coolant){
+        if(self.resources.heat[0] >= 2 && self.resources.coolant[0] >= 2){
+            self.resources.heat[0] -= 2;
+            self.resources.coolant[0] -= 2;
+        }
+    }
+
+
+}
+
 function Room(name){
     var self = this;
 
@@ -236,34 +298,37 @@ function Room(name){
 
     self.roomType = 'generic';
 
-    self.pushRate = 5;
-    self.pullRate = 5;
+    self.transferRate = 2;
+    self.pushRate = 2;
+    self.pullRate = 2;
     self.collectRate = 1000;
 
     self.iStack = '';
     self.iFloor = '';
     self.iRoom = '';
 
-    //self.bits = [0,0];
-    //self.heat = [0,0];
-    //self.coolant = [0,0];
-    //self.power = [0,0];
-    //self.data = [0,0];
+    self.resources = {};
 
     self.generates = [];
     self.cycleCosts = [];
     self.pushDirections = [];
+    self.pullTypes = [];
 
     self.cycle = function(){
         var affordable = cycleCostCheck(self);
+        var overheated = isOverheated(self);
         var notFull = generateOutputCapacityCheck(self);
 
-        if(affordable && notFull){
-            cycleCostPay(self);
-            generate(self);
-        }
 
-        pushOut(self);
+
+        if(affordable && notFull && !overheated){
+            generate(self);
+            cycleCostPay(self);
+        }
+        pullIn(self);
+        manageHeat(self);
+
+        //pushOut(self);
     }
 
 }
@@ -273,35 +338,28 @@ function changeRoomType(room,type){
     if(buy(250)){
         room.roomType = type;
 
-        //room.power[1] = defaultCap;
-        //room.coolant[1] = defaultCap;
-        //room.heat[1] = defaultCap;
-
-        room.power = [0,defaultCap];
-        room.coolant = [0,defaultCap];
-        room.heat = [0,defaultCap];
+        room.resources.power = [0,defaultCap];
+        room.resources.coolant = [0,defaultCap];
+        room.resources.heat = [0,defaultCap];
 
         switch(type){
             case 'lobby':
-                room.bits = [0,defaultCap];
+                room.resources.bits = [0,defaultCap];
+
+                delete room.resources.heat;
+                room.generates.push(['coolant',1]);
 
                 room.generates.push(['power',1]);
-                room.generates.push(['coolant',1]);
                 room.generates.push(['bits',1]);
 
-                room.pushDirections.push(['power','right']);
-                room.pushDirections.push(['power','left']);
-                room.pushDirections.push(['power','down']);
-                room.pushDirections.push(['power','up']);
-
-                room.pushDirections.push(['coolant','right']);
-                room.pushDirections.push(['coolant','left']);
-                room.pushDirections.push(['coolant','down']);
-                room.pushDirections.push(['coolant','up']);
                 break;
             case 'power':
-                room.generates.push(['power',1]);
-                room.generates.push(['heat',1]);
+                room.generates.push(['power',2]);
+                //room.generates.push(['heat',1]);
+
+                room.cycleCosts.push(['heat',-1]);
+
+                room.pullTypes.push('coolant');
 
                 room.pushDirections.push(['power','right']);
                 room.pushDirections.push(['power','left']);
@@ -309,9 +367,12 @@ function changeRoomType(room,type){
                 room.pushDirections.push(['power','up']);
                 break;
             case 'coolant':
-                room.generates.push(['coolant',1]);
+                delete room.resources.heat;
+                room.generates.push(['coolant',2]);
 
-                room.cycleCosts.push(['power',2]);
+                room.cycleCosts.push(['power',1]);
+
+                room.pullTypes.push('power');
 
                 room.pushDirections.push(['coolant','right']);
                 room.pushDirections.push(['coolant','left']);
@@ -319,25 +380,40 @@ function changeRoomType(room,type){
                 room.pushDirections.push(['coolant','up']);
                 break;
             case 'bitMiner':
-                room.bits = [0,defaultCap];
+                room.resources.bits = [0,defaultCap];
 
                 room.cycleCosts.push(['power',2]);
 
                 room.generates.push(['bits',1]);
                 break;
             case 'dataMiner':
-                room.data = [0,defaultCap];
+                room.resources.data = [0,defaultCap];
 
                 room.cycleCosts.push(['power',2]);
 
                 room.generates.push(['data',1]);
                 break;
             case 'powerCell':
-                room.power[1] = 10000;
-                room.pushDirections.push({
-                    params: ['power',2],
-                    direction: 'right'
-                });
+                delete room.resources.heat;
+                delete room.resources.coolant;
+
+                room.resources.power[1] = 10000;
+
+                room.pullTypes.push('power');
+                break;
+            case 'coolantTank':
+                delete room.resources.heat;
+                delete room.resources.power;
+
+                room.resources.coolant[1] = 10000;
+
+                room.pullTypes.push('coolant');
+                break;
+
+                //room.pushDirections.push({
+                //    params: ['power',2],
+                //    direction: 'right'
+                //});
         }
 
     }
@@ -556,6 +632,38 @@ app.controller("theController", ["$scope","$http", function ($scope,$http) {
     $scope.compressData = compressData;
     $scope.collectBits = function(source,operator){
         collect(source,'bits',operator);
+    };
+
+    //$scope.glyphicon = function(name){
+    //    switch(name){
+    //        case 'power':
+    //            return 'glyphicon glyphicon-flash';
+    //        case 'coolant':
+    //            return 'glyphicon glyphicon-tint';
+    //        case 'heat':
+    //            return 'glyphicon glyphicon-fire';
+    //        default:
+    //            return null;
+    //    }
+    //};
+
+    $scope.style = {
+        power: {
+            glyphicon: 'glyphicon glyphicon-flash',
+            progressBarColor: 'progress-bar-warning'
+        },
+        coolant: {
+            glyphicon: 'glyphicon glyphicon-tint',
+            progressBarColor: 'progress-bar-info'
+        },
+        heat: {
+            glyphicon: 'glyphicon glyphicon-fire',
+            progressBarColor: 'progress-bar-danger'
+        },
+        bits: {
+            glyphicon: 'glyphicon glyphicon-bitcoin',
+            progressBarColor: 'progress-bar-success'
+        },
     };
 
     var Game = { };
