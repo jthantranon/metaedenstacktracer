@@ -12,78 +12,44 @@
 </head>
 <body ng-app="theApp">
 <div ng-controller="theController">
-    <!--<div class="well well-lg">-->
-        <!--<ul class="nav nav-pills" ng-repeat="object in stuff">-->
-            <!--<li role="presentation" class="active"><a href="#" ng-bind="object.bid.name" title="{{object | json}}"></a></li>-->
-        <!--</ul>-->
-    <!--</div>-->
-    <div class="alert alert-success">
-        <div class="">
-            <h1 ng-bind="stuff.user.bid.name" title="{{stuff.user | json}}"></h1>
-            <h2 ng-bind="stuff.operator.bid.name" title="{{stuff.operator | json}}"></h1>
-            <!--<span class="glyphicon glyphicon-bitcoin" aria-hidden="true"></span>:-->
-            <!--<span ng-bind="stack.bits"> </span> / <span ng-bind="stack.bitCap"> </span>-->
-            <div class="progress">
-                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{stuff.operator.bits[0]}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width: getPercent(stuff.operator.bits[0],stuff.operator.bits[1]) + '%'}">
-                    <span class="glyphicon glyphicon-bitcoin" aria-hidden="true"></span>: {{stuff.operator.bits[0]}} / {{stuff.operator.bits[1]}}
-                </div>
+    <button type="button" class="btn btn-default btn-block dropdown-toggle" title="{{room | json}}"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <!--<h1 ng-bind="stuff.user.bid.name" title="{{stuff.user | json}}"></h1>-->
+        <h2 ng-bind="stuff.operator.bid.name" title="{{stuff.operator | json}}"></h2>
+        <div class="progress">
+            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{stuff.operator.bits[0]}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width: getPercent(stuff.operator.bits[0],stuff.operator.bits[1]) + '%'}">
+                <span class="glyphicon glyphicon-bitcoin" aria-hidden="true"></span>: {{stuff.operator.bits[0]}} / {{stuff.operator.bits[1]}}
             </div>
-            <div class="progress">
-                <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="{{stuff.operator.compressedData}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width: getPercent(stuff.operator.compressedData,stuff.operator.compressedDataCap) + '%'}">
-                    <span class="glyphicon glyphicon-bitcoin" aria-hidden="true"></span>: {{stuff.operator.compressedData}} / {{stuff.operator.compressedDataCap}}
-                </div>
-            </div>
-
-
         </div>
-    </div>
 
+        <div class="progress">
+            <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="{{stuff.operator.compressedData}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width: getPercent(stuff.operator.compressedData,stuff.operator.compressedDataCap) + '%'}">
+                <span class="glyphicon glyphicon-th-large" aria-hidden="true"></span>: {{stuff.operator.compressedData}} / {{stuff.operator.compressedDataCap}}
+            </div>
+        </div>
+
+        <span class="caret"></span>
+    </button>
+    <br>
 
     <div class="stack-box alert alert-info" ng-repeat="stack in registry.stacks">
-        <div class="resource-bars">
+
+        <div>
+            <!--STACK NAME-->
             <h1 ng-bind="stack.bid.name" title="{{stack | json}}"></h1>
-
-            <!--Stack Resources - Deprecated-->
-            <!--<div class="progress">-->
-                <!--<div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{stack.power}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width: getPercent(stack.power,stack.powerCap) + '%'}">-->
-                    <!--<span class="glyphicon glyphicon-flash" aria-hidden="true"></span>: {{stack.power}} / {{stack.powerCap}}-->
-                <!--</div>-->
-            <!--</div>-->
-
-            <!--<div class="progress">-->
-                <!--<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{stack.coolant}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width: getPercent(stack.coolant,stack.coolantCap) + '%'}">-->
-                    <!--<span class="glyphicon glyphicon-tint" aria-hidden="true"></span>: {{stack.coolant}} / {{stack.coolantCap}}-->
-                <!--</div>-->
-            <!--</div>-->
-
-
-            <!--<div class="progress">-->
-                <!--<div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="{{stack.rawData}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width: getPercent(stack.rawData,stack.dataCap) + '%'}">-->
-                    <!--<span class="glyphicon glyphicon-hdd" aria-hidden="true"></span>: {{stack.rawData}} / {{stack.dataCap}}-->
-                <!--</div>-->
-            <!--</div>-->
 
             <!--ADD FLOOR-->
             <div class="well well-lg">
                 <div title="{{floor | json}}" ng-click="addFloor(stack)"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> ADD FLOOR</div>
             </div>
 
-
         </div>
 
-        <br>
-
+        <!--FLOORS-->
         <div class="floors well well-lg" ng-repeat="floor in stack.floors | orderBy:'-'">
-            <!--<div>-->
-                <!--<h2 ng-bind="floor.bid.name" title="{{floor | json}}"> </h2>-->
-            <!--</div>-->
-            <!--<ul class="nav nav-pills">-->
-                <!--<li role="presentation" class="active" ng-repeat="room in floor.rooms">-->
-                    <!--<a href="#" ng-bind="room.bid.name" title="{{room | json}}" ng-click="stack.power = stack.power - 100"></a>-->
-                <!--</li>-->
-                <!---->
-            <!--</ul>-->
+
             <span ng-bind="floor.bid.name" title="{{floor | json}}"> </span>
+
             <div class="btn-group" ng-repeat="room in floor.rooms">
                 <button type="button" class="btn btn-default btn-block dropdown-toggle" title="{{room | json}}"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -97,52 +63,28 @@
                         </div>
                     </div>
 
-
-                    <!--<span ng-show="room.power[0] >= 0">-->
-                        <!--<span class="glyphicon glyphicon-flash" aria-hidden="true">{{room.power}}</span>-->
-                        <!--&lt;!&ndash;<div class="progress">&ndash;&gt;-->
-                            <!--&lt;!&ndash;<div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="{{room.power[0]}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width: getPercent(room.power[0],room.power[1]) + '%'}">&ndash;&gt;-->
-                                <!--&lt;!&ndash;<span class="glyphicon glyphicon-flash" aria-hidden="true"></span>: {{room.power[0]}} / {{room.power[1]}}&ndash;&gt;-->
-                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                        <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                        <!--<br>-->
-                    <!--</span>-->
-                    <!--<span ng-show="room.coolant[0] >= 0">-->
-                        <!--<span class="glyphicon glyphicon-tint" aria-hidden="true">{{room.coolant}}</span><br>-->
-                    <!--</span>-->
-                    <!--<span ng-show="room.heat[0] >= 0">-->
-                        <!--<span class="glyphicon glyphicon-fire" aria-hidden="true">{{room.heat}}</span><br>-->
-                    <!--</span>-->
-                    <!--<span ng-show="room.bits[0] >= 0">-->
-                        <!--<span class="glyphicon glyphicon-bitcoin" aria-hidden="true">{{room.bits}}</span><br>-->
-                    <!--</span>-->
-                    <!--<span ng-show="room.data[0] >= 0">-->
-                        <!--<span class="glyphicon glyphicon-hdd" aria-hidden="true">{{room.data}}</span><br>-->
-                    <!--</span>-->
-                    <!--<br>-->
-                    <!--{{room.roomType}} -->
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a href="#" ng-click="collectBits(room,stuff.operator)">Collect Bits</a></li>
+                    <li><a href="#" ng-click="collectBits(room,stuff.operator)" ng-show="room.resources.bits">Collect Bits</a></li>
                     <li ng-show="room.roomType == 'compressor'"><a href="#" ng-click="compressData(stack,stuff.operator)">Compress Data</a></li>
                     <li role="separator" class="divider"></li>
-                    <li><a href="#" ng-click="changeRoomType(room,'lobby')">Lobby</a></li>
-                    <li><a href="#" ng-click="changeRoomType(room,'power')">Power</a></li>
+                    <li><a href="#" ng-click="changeRoomType(room,'core')">Core - (Limit 1)</a></li>
+                    <li><a href="#" ng-click="changeRoomType(room,'power')">Power Generator - Generates Power</a></li>
+                    <li><a href="#" ng-click="changeRoomType(room,'coolant')">Coolant Pump - Generates Coolant</a></li>
                     <li><a href="#" ng-click="changeRoomType(room,'bitMiner')">Bit Miner</a></li>
                     <li><a href="#" ng-click="changeRoomType(room,'dataMiner')">Data Miner</a></li>
-                    <li><a href="#" ng-click="changeRoomType(room,'coolant')">Coolant</a></li>
+
                     <li role="separator" class="divider"></li>
                     <li><a href="#" ng-click="changeRoomType(room,'powerCell')">Power Cell</a></li>
-                    <li><a href="#" ng-click="changeRoomType(room,'powerBank')">Power Bank</a></li>
-                    <li><a href="#" ng-click="changeRoomType(room,'coolantTank')">Water Tank</a></li>
-                    <li><a href="#" ng-click="changeRoomType(room,'diskSpace')">Disk Space</a></li>
-                    <li><a href="#" ng-click="changeRoomType(room,'bitVault')">Bit Vault</a></li>
-                    <li><a href="#" ng-click="changeRoomType(room,'omniRepository')">Omni Repository</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#" ng-click="changeRoomType(room,'compressor')">Data Compressor</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="#" ng-click="changeRoomType(room,'proxTest')">Prox Test</a></li>
+                    <li><a href="#" ng-click="changeRoomType(room,'coolantTank')">Coolant Tank</a></li>
+                    <!--<li><a href="#" ng-click="changeRoomType(room,'diskSpace')">Disk Space</a></li>-->
+                    <!--<li><a href="#" ng-click="changeRoomType(room,'bitVault')">Bit Vault</a></li>-->
+                    <!--<li><a href="#" ng-click="changeRoomType(room,'omniRepository')">Omni Repository</a></li>-->
+                    <!--<li role="separator" class="divider"></li>-->
+                    <!--<li><a href="#" ng-click="changeRoomType(room,'compressor')">Data Compressor</a></li>-->
+                    <!--<li role="separator" class="divider"></li>-->
+                    <!--<li><a href="#" ng-click="changeRoomType(room,'proxTest')">Prox Test</a></li>-->
 
                     <!--<li><a href="#">Separated link</a></li>-->
                 </ul>

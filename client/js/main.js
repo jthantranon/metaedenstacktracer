@@ -170,35 +170,15 @@ function cycleCostPay(generator){
     }
 }
 
-
-//function pushOut(origin){
-//    var pushDirectionsLength = origin.pushDirections.length;
-//
-//    if(pushDirectionsLength > 0){
-//        for(var i = 0; i < pushDirectionsLength; ++i){
-//            var params = origin.pushDirections[i];
-//
-//            var resource = params[0];
-//            var direction = params[1];
-//            var rate = origin.pushRate;
-//
-//            var destination = getNeighbors(origin.iStack,origin.iFloor,origin.iRoom)[direction];
-//
-//            if(destination && origin[resource][0] >= rate){ // improve this so it drains remaining amount
-//                if(destination[resource] && destination[resource][0] < destination[resource][1]){
-//                    origin[resource][0] -= rate;
-//                    destination[resource][0] += rate;
-//                }
-//            }
-//
-//        }
-//    }
-//}
-
 function transfer(resource,source,destination){
     // untested, transferRate should come out to which ever is lesser (the bottleneck)
 
     var sourceValue = source.resources[resource] ? source.resources[resource][0] : false;
+
+    //if(source.roomType === 'coolant'){
+    //    console.log(destination);
+    //    return;
+    //}
 
     if(sourceValue){
         var transferRate = source.transferRate <= destination.transferRate ?
@@ -220,22 +200,29 @@ function transfer(resource,source,destination){
 function pullIn(origin){
     var pullTypesLength = origin.pullTypes.length;
 
+
+
     if(pullTypesLength > 0){
         var neighbors = getNeighbors(origin.iStack,origin.iFloor,origin.iRoom);
+        if(neighbors     ){
+            for(var i = 0; i < pullTypesLength; ++i){
+                var type = origin.pullTypes[i];
 
-        for(var i = 0; i < pullTypesLength; ++i){
-            var type = origin.pullTypes[i];
-            //var rate = origin.pullRate;
-            //var originType = origin.resources[type];
+                for (var direction in neighbors) {
+                    if (neighbors.hasOwnProperty(direction)) {
+                        var neighbor = neighbors[direction];
+                        if(neighbor){
+                            if(neighbor.resources[type] && origin.resources[type]){
+                                if(neighbor.resources[type][0]/neighbor.resources[type][1] > origin.resources[type][0]/origin.resources[type][1]) transfer(type,neighbor,origin);
+                            }
 
-            for (var direction in neighbors) {
-                if (neighbors.hasOwnProperty(direction)) {
-                    var neighbor = neighbors[direction];
-                    if(neighbor) transfer(type,neighbor,origin);
+                        }
+                    }
                 }
-            }
 
+            }
         }
+
     }
 
 }
@@ -243,7 +230,6 @@ function pullIn(origin){
 function collect(source,type,operator){
     var collectRate = operator.collectRate;
     var resourceValue = source.resources[type][0];
-    var resourceMax = source.resources[type][1];
 
     if(source && type){
         console.log(resourceValue);
@@ -279,8 +265,6 @@ function isOverheated(self){
 }
 
 function manageHeat(self){
-    //var coolant = self.resources.coolant ? self.resources.coolant : false;
-    //var heat = self.resources.heat ? self.resources.heat : false;
     if(self.resources.heat && self.resources.coolant){
         if(self.resources.heat[0] >= 2 && self.resources.coolant[0] >= 2){
             self.resources.heat[0] -= 2;
@@ -319,7 +303,9 @@ function Room(name){
         var overheated = isOverheated(self);
         var notFull = generateOutputCapacityCheck(self);
 
-
+        if(self.roomType === 'coolant'){
+            console.log(affordable);
+        }
 
         if(affordable && notFull && !overheated){
             generate(self);
@@ -328,7 +314,6 @@ function Room(name){
         pullIn(self);
         manageHeat(self);
 
-        //pushOut(self);
     }
 
 }
@@ -343,7 +328,7 @@ function changeRoomType(room,type){
         room.resources.heat = [0,defaultCap];
 
         switch(type){
-            case 'lobby':
+            case 'core':
                 room.resources.bits = [0,defaultCap];
 
                 delete room.resources.heat;
@@ -361,10 +346,6 @@ function changeRoomType(room,type){
 
                 room.pullTypes.push('coolant');
 
-                room.pushDirections.push(['power','right']);
-                room.pushDirections.push(['power','left']);
-                room.pushDirections.push(['power','down']);
-                room.pushDirections.push(['power','up']);
                 break;
             case 'coolant':
                 delete room.resources.heat;
@@ -374,24 +355,28 @@ function changeRoomType(room,type){
 
                 room.pullTypes.push('power');
 
-                room.pushDirections.push(['coolant','right']);
-                room.pushDirections.push(['coolant','left']);
-                room.pushDirections.push(['coolant','down']);
-                room.pushDirections.push(['coolant','up']);
                 break;
             case 'bitMiner':
                 room.resources.bits = [0,defaultCap];
 
-                room.cycleCosts.push(['power',2]);
+                room.generates.push(['bits',2]);
 
-                room.generates.push(['bits',1]);
+                room.cycleCosts.push(['power',1]);
+                room.cycleCosts.push(['heat',-1]);
+
+                room.pullTypes.push('power');
+                room.pullTypes.push('coolant');
                 break;
             case 'dataMiner':
                 room.resources.data = [0,defaultCap];
 
-                room.cycleCosts.push(['power',2]);
-
                 room.generates.push(['data',1]);
+
+                room.cycleCosts.push(['power',1]);
+                room.cycleCosts.push(['heat',-1]);
+
+                room.pullTypes.push('power');
+                room.pullTypes.push('coolant');
                 break;
             case 'powerCell':
                 delete room.resources.heat;
@@ -409,11 +394,6 @@ function changeRoomType(room,type){
 
                 room.pullTypes.push('coolant');
                 break;
-
-                //room.pushDirections.push({
-                //    params: ['power',2],
-                //    direction: 'right'
-                //});
         }
 
     }
@@ -528,93 +508,22 @@ function EdenObjects(){
     self.operator = addOperator(self.user,'JFT - Op');
 
     self.registry = REGISTRY;
-
-    //self.stack0 = addStack();
-    //addFloor(self.stack0);
-    //addRoom(self.stack0.floors[0],'bitMiner');
-    //addRoom(self.stack0.floors[0],'power');
-    //addRoom(self.stack0.floors[0],'coolant');
-    //addFloor(self.stack0);
-    //addRoom(self.stack0.floors[1],'power');
-    //addRoom(self.stack0.floors[1],'bitMiner');
-    //addRoom(self.stack0.floors[1],'power');
-
-    //self.stack1 = addStack();
-    //addFloor(self.stack1, 'Floor 0');
-    //addRoom(self.stack1.floors[0],'power');
-    //addRoom(self.stack1.floors[0],'bitMiner');
-    //addRoom(self.stack1.floors[0],'coolant');
-    //addRoom(self.stack1.floors[0],'power');
-
-    //self.operator1 = new Operator();
 }
 
 function checkStack(stacks,debug){
-    var op = ClientObjects.operator;
-    var bitCapBonus = 0;
     $.each(stacks,function(iStack,stack){
-        var stackCapBonus = 0;
-        var powerCapBonus = 0,
-            coolantCapBonus = 0,
-            dataCapBonus = 0;
         $.each(stack.floors,function(iFloor,floor){
             $.each(floor.rooms,function(iRoom,room){
                 room.iStack = iStack;
                 room.iFloor = iFloor;
                 room.iRoom = iRoom;
-                room.cycle();
+                if(room.roomType !== 'generic') room.cycle();
 
                 if(debug){
                     console.log('room found in stack ' + iStack + ' floor ' + iFloor + ' position ' + iRoom + ' of type: ' + room.roomType);
                 }
-                if(stack.power >= 0){
-                    if(room.roomType === 'bitMiner' && (op.bits < op.bitCap)){
-                        stack.power--;
-                        op.bits++;
-                    }
-                    if(room.roomType === 'dataMiner' && (stack.rawData < stack.dataCap)){
-                        stack.power--;
-                        stack.rawData++;
-                    }
-                    if(room.roomType === 'coolant' && (stack.coolant < stack.coolantCap)){
-                        stack.power--;
-                        stack.coolant++;
-                    }
-                }
-
-                if(room.roomType === 'power' && (stack.power < stack.powerCap)){
-                    stack.power++;
-                }
-
-                switch(room.roomType){
-                    case 'powerBank':
-                        powerCapBonus += 1000;
-                        break;
-                    case 'coolantTank':
-                        coolantCapBonus += 1000;
-                        break;
-                    case 'diskSpace':
-                        dataCapBonus += 1000;
-                        break;
-                    case 'bitVault':
-                        bitCapBonus += 1000;
-                        break;
-                    case 'omniRepository':
-                        stackCapBonus += 250;
-                        bitCapBonus += 250;
-                        break;
-                    case 'proxTest':
-                        console.log('I am: ' + iStack + '.' + iFloor + '.' + iRoom);
-                        break;
-                }
-
             });
         });
-        stack.powerCap = stack.baseCap + stackCapBonus + powerCapBonus;
-        stack.coolantCap = stack.baseCap + stackCapBonus + coolantCapBonus;
-        stack.dataCap = stack.baseCap + stackCapBonus + dataCapBonus;
-        op.bitCap = op.baseCap + bitCapBonus;
-
     });
 }
 
@@ -634,19 +543,6 @@ app.controller("theController", ["$scope","$http", function ($scope,$http) {
         collect(source,'bits',operator);
     };
 
-    //$scope.glyphicon = function(name){
-    //    switch(name){
-    //        case 'power':
-    //            return 'glyphicon glyphicon-flash';
-    //        case 'coolant':
-    //            return 'glyphicon glyphicon-tint';
-    //        case 'heat':
-    //            return 'glyphicon glyphicon-fire';
-    //        default:
-    //            return null;
-    //    }
-    //};
-
     $scope.style = {
         power: {
             glyphicon: 'glyphicon glyphicon-flash',
@@ -663,6 +559,10 @@ app.controller("theController", ["$scope","$http", function ($scope,$http) {
         bits: {
             glyphicon: 'glyphicon glyphicon-bitcoin',
             progressBarColor: 'progress-bar-success'
+        },
+        data: {
+            glyphicon: 'glyphicon glyphicon-hdd',
+            progressBarColor: 'progress-bar-primary'
         },
     };
 
