@@ -1,5 +1,35 @@
-.progress-bar {
-    color: black;
+@font-face {
+    font-family: 'Squada One';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Squada One'), local('SquadaOne-Regular'), url(../fonts/squada-one.woff2), url(http://fonts.gstatic.com/s/squadaone/v5/DIbfqh10Zkwc_Qd08Y0safk_vArhqVIZ0nv9q090hN8.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+    font-family: 'Rajdhani';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Rajdhani'), local('Rajdhani-Regular'), url(../fonts/rajdhani.woff2),url(http://fonts.gstatic.com/s/rajdhani/v5/tz3398jtBIhi1rrADn6BZvesZW2xOQ-xsNqO47m55DA.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+    font-family: 'Titillium Web';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Titillium Web'), local('TitilliumWeb-Regular'), url(../fonts/titillium.woff2), url(http://fonts.gstatic.com/s/titilliumweb/v4/7XUFZ5tgS-tD6QamInJTcZSnX671uNZIV63UdXh3Mg0.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+
+
+.operator-card, .stack-card {
+    float: left;
+    margin-top: 5px;
+}
+
+.card {
+    margin-top: 5px;
 }
 
 .btn-default {
@@ -7,11 +37,22 @@
     height: 200px;
 }
 
-/*.stack-box {*/
-    /*position: relative;*/
-    /*width: 100%;*/
-    /*height: 100%;*/
-/*}*/
+.floor-button {
+    width: 600px;
+    height: 50px;
+}
+
+.stack-box {
+    margin-left: 25px;
+    position: relative;
+    float: left;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.progress-bar {
+    color: black;
+    font-family: 'Aldrich', sans-serif;
+}
 
 /*.resource-bars {*/
     /*position: absolute;*/
@@ -31,8 +72,8 @@
     /*width: 75%;*/
 /*}*/
 
-h1 {
-    font: 'Oswald', sans-serif;
+h1, h2 {
+    font-family: 'Rajdhani', sans-serif;
 }
 
 #world-view {

@@ -12,6 +12,9 @@ function Registry(){
     self.users = [];
     self.operators = [];
     self.stacks = [];
+    self.currentUser = null;
+    self.currentOperator = null;
+    self.currentStack = null;
     //self.floors = [];
     //self.rooms = [];
 
@@ -74,6 +77,8 @@ function Operator(name){
     //self.bitCap = 1000;
     self.researchPoints = 0;
     self.researchCap = 1000;
+
+    self.stacks = [];
 
     //REGISTRY.operators.push(self);
 
@@ -423,6 +428,8 @@ function addStack(name){
     if(buy(cost)){
         var stack = new Stack(name || 'Stack ' + REGISTRY.stacks.length);
         REGISTRY.stacks.push(stack);
+        REGISTRY.currentOperator.stacks.push(stack);
+        REGISTRY.currentStack = stack;
         return stack;
     }
 
@@ -431,6 +438,7 @@ function addStack(name){
 function addUser(name){
     var user = new User(name);
     REGISTRY.users.push(user);
+    REGISTRY.currentUser = user;
     return user;
 }
 
@@ -438,10 +446,16 @@ function addOperator(user,name){
     var operator = new Operator(name);
     user.operators.push(operator);
     REGISTRY.users.push(operator);
+    REGISTRY.currentOperator = operator;
     return operator;
 }
 
-
+function switchCurrentStack(iStack){
+    console.log(iStack);
+    var stack = REGISTRY.currentOperator.stacks[iStack];
+    REGISTRY.currentStack = stack;
+    return stack;
+}
 
 
 
@@ -539,6 +553,10 @@ app.controller("theController", ["$scope","$http", function ($scope,$http) {
     $scope.changeRoomType = changeRoomType;
     $scope.getPercent = getPercent;
     $scope.compressData = compressData;
+    $scope.switchCurrentStack = switchCurrentStack;
+
+    $scope.currentStack = $scope.registry.currentStack;
+
     $scope.collectBits = function(source,operator){
         collect(source,'bits',operator);
     };
