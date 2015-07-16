@@ -69,6 +69,11 @@ function Operator(name){
 
     self.inventory = {};
 
+    self.handCard = chance.d10();
+    self.drawCard = function(){
+        self.handCard = chance.d10();
+    };
+
     self.research = [0,self.baseCap];
     self.bits = [5000,self.baseCap];
     self.data = [0,self.baseCap];
@@ -105,6 +110,9 @@ function Stack(name){
     self.dataCap = self.baseCap;
 
     self.floors = [];
+    self.basement = {
+        floors: []
+    };
 
     //REGISTRY.stacks.push(self);
 }
@@ -280,7 +288,7 @@ function manageHeat(self){
 
 }
 
-function Room(name){
+function Room(name,isBasement){
     var self = this;
 
     self.bid = new BaseID('room',name);
@@ -302,6 +310,19 @@ function Room(name){
     self.cycleCosts = [];
     self.pushDirections = [];
     self.pullTypes = [];
+
+    self.fireWall = {
+        pw: chance.d10(),
+        hp: chance.d100()
+    };
+
+    self.actions = {
+        crack: function(operator){
+            console.log(operator.handCard);
+            console.log(self.fireWall.pw);
+            operator.drawCard();
+        }
+    };
 
     self.cycle = function(){
         var affordable = cycleCostCheck(self);
@@ -409,18 +430,44 @@ function addRoom(floor, type, name){
     if(buy(cost)){
         type = type || 'generic';
         var room = new Room(name || 'R' + floor.rooms.length, type);
+
+        switch(type){
+            case 'basement':
+                room.decompile = {
+                    type: 'cobblestone',
+                    amount: chance.d100()
+                };
+
+                break;
+            default:
+                break;
+        }
+
         floor.rooms.push(room);
         return room;
     }
 }
 
-function addFloor(stack, name){
+function addFloor(stack, type){
     var cost = 1000;
+    var floors,
+        floor,
+        name;
+    if(type === 'basement'){
+        name = 'Basement ';
+        floors = stack.basement.floors;
+    } else {
+        name = 'Floor ';
+        floors = stack.floors;
+    }
+
     if(buy(cost)){
-        var floor = new Floor(name || 'Floor ' + stack.floors.length);
-        stack.floors.push(floor);
+        floor = new Floor(name + floors.length);
+        floors.push(floor);
         return floor;
     }
+
+
 }
 
 function addStack(name){
@@ -538,6 +585,18 @@ function checkStack(stacks,debug){
                 }
             });
         });
+        $.each(stack.basement.floors,function(iFloor,floor){
+            $.each(floor.rooms,function(iRoom,room){
+                room.iStack = iStack;
+                room.iFloor = iFloor;
+                room.iRoom = iRoom;
+                if(room.roomType !== 'generic') room.cycle();
+
+                if(debug){
+                    console.log('room found in stack ' + iStack + ' floor ' + iFloor + ' position ' + iRoom + ' of type: ' + room.roomType);
+                }
+            });
+        });
     });
 }
 
@@ -545,6 +604,7 @@ window.ClientObjects = new EdenObjects();
 var app = angular.module("theApp", []);
 app.controller("theController", ["$scope","$http", function ($scope,$http) {
     $scope.stuff = window.ClientObjects;
+    $scope.globals = window.ClientObjects;
     $scope.registry = REGISTRY;
 
     $scope.addStack = addStack;
