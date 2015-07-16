@@ -15,8 +15,6 @@ function Registry(){
     self.currentUser = null;
     self.currentOperator = null;
     self.currentStack = null;
-    //self.floors = [];
-    //self.rooms = [];
 
 }
 
@@ -33,8 +31,6 @@ function BaseID(type,name){
     self.type = type; // Operator, User, System, etc.
     self.name = name || type + ' ' + uid.slice(-5) || 'unnamed'; // Eden Familiar name.
 
-    //REGISTRY ? REGISTRY.baseIDs.push(self) : null;
-
 }
 
 function User(name){
@@ -48,9 +44,6 @@ function User(name){
 
     self.operators = [];
 
-
-    //REGISTRY.users.push(self);
-
 }
 
 
@@ -59,9 +52,8 @@ function Operator(name){
     var self = this;
 
     self.bid = new BaseID('operator',name);
-    self.collectRate = 1000;
-    //self.pos = new BasePosition(0,0,0,'');
 
+    self.collectRate = 1000;
     self.baseCap = 10000;
 
     self.compressedData = 0;
@@ -78,20 +70,15 @@ function Operator(name){
     self.bits = [5000,self.baseCap];
     self.data = [0,self.baseCap];
 
-    //self.bits = 5000;
-    //self.bitCap = 1000;
     self.researchPoints = 0;
     self.researchCap = 1000;
 
     self.stacks = [];
 
-    //REGISTRY.operators.push(self);
-
 }
 
 function Stack(name){
     var self = this;
-    //var allCap = 10000;
 
     self.bid = new BaseID('stack',name);
 
@@ -114,7 +101,6 @@ function Stack(name){
         floors: []
     };
 
-    //REGISTRY.stacks.push(self);
 }
 
 function Floor(name){
@@ -184,14 +170,7 @@ function cycleCostPay(generator){
 }
 
 function transfer(resource,source,destination){
-    // untested, transferRate should come out to which ever is lesser (the bottleneck)
-
     var sourceValue = source.resources[resource] ? source.resources[resource][0] : false;
-
-    //if(source.roomType === 'coolant'){
-    //    console.log(destination);
-    //    return;
-    //}
 
     if(sourceValue){
         var transferRate = source.transferRate <= destination.transferRate ?
@@ -366,7 +345,6 @@ function changeRoomType(room,type){
                 break;
             case 'power':
                 room.generates.push(['power',2]);
-                //room.generates.push(['heat',1]);
 
                 room.cycleCosts.push(['heat',-1]);
 
