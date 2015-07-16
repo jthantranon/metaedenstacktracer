@@ -290,6 +290,14 @@ function Room(name,isBasement){
     self.pushDirections = [];
     self.pullTypes = [];
 
+    self.combo = [];
+    self.comboLength = chance.d10();
+
+    for (var i = 0; i < self.comboLength; i++) {
+        self.combo.push(chance.d10());
+
+    }
+
     self.fireWall = {
         pw: chance.d10(),
         hp: chance.d100()
@@ -482,8 +490,6 @@ function switchCurrentStack(iStack){
     return stack;
 }
 
-
-
 function getPercent(min,max){
     return (min/max).toFixed(2)*100;
 }
@@ -578,6 +584,42 @@ function checkStack(stacks,debug){
     });
 }
 
+var style = {
+    power: {
+        glyphicon: 'glyphicon glyphicon-flash',
+        progressBarColor: 'progress-bar-warning'
+    },
+    coolant: {
+        glyphicon: 'glyphicon glyphicon-tint',
+        progressBarColor: 'progress-bar-info'
+    },
+    heat: {
+        glyphicon: 'glyphicon glyphicon-fire',
+        progressBarColor: 'progress-bar-danger'
+    },
+    bits: {
+        glyphicon: 'glyphicon glyphicon-bitcoin',
+        progressBarColor: 'progress-bar-success'
+    },
+    data: {
+        glyphicon: 'glyphicon glyphicon-hdd',
+        progressBarColor: 'progress-bar-primary'
+    },
+};
+
+function collectBits(source,operator){
+    collect(source,'bits',operator);
+}
+
+function markCombo(room,index){
+    var comboNumber = room.combo[index];
+    if(comboNumber === ClientObjects.operator.handCard){
+        room.combo[index] = 'x';
+        ClientObjects.operator.drawCard();
+    }
+
+}
+
 window.ClientObjects = new EdenObjects();
 var app = angular.module("theApp", []);
 app.controller("theController", ["$scope","$http", function ($scope,$http) {
@@ -592,35 +634,18 @@ app.controller("theController", ["$scope","$http", function ($scope,$http) {
     $scope.getPercent = getPercent;
     $scope.compressData = compressData;
     $scope.switchCurrentStack = switchCurrentStack;
+    $scope.collectBits = collectBits;
+    $scope.markCombo = markCombo;
+
+    $scope.log = function(x){
+        console.log(x);
+    };
 
     $scope.currentStack = $scope.registry.currentStack;
 
-    $scope.collectBits = function(source,operator){
-        collect(source,'bits',operator);
-    };
 
-    $scope.style = {
-        power: {
-            glyphicon: 'glyphicon glyphicon-flash',
-            progressBarColor: 'progress-bar-warning'
-        },
-        coolant: {
-            glyphicon: 'glyphicon glyphicon-tint',
-            progressBarColor: 'progress-bar-info'
-        },
-        heat: {
-            glyphicon: 'glyphicon glyphicon-fire',
-            progressBarColor: 'progress-bar-danger'
-        },
-        bits: {
-            glyphicon: 'glyphicon glyphicon-bitcoin',
-            progressBarColor: 'progress-bar-success'
-        },
-        data: {
-            glyphicon: 'glyphicon glyphicon-hdd',
-            progressBarColor: 'progress-bar-primary'
-        },
-    };
+
+    $scope.style = style;
 
     var Game = { };
     Game.fps = 100; // 50 default

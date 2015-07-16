@@ -130,21 +130,33 @@
 
                         <div ng-show="room.decompile">
                             <div>{{room.decompile.type}} / {{room.decompile.amount}}</div>
-                        <span class="btn-group">
-                            <button type="button" class="btn btn-default btn-block mini-button card" title="{{room | json}}"
-                                    aria-haspopup="true" aria-expanded="false">
-                                <span class="glyphicon icon-pixelpickaxe" aria-hidden="true"></span>
-                            </button>
-                            <button type="button" class="btn btn-default btn-block mini-button card" title="{{room | json}}"
-                                    aria-haspopup="true" aria-expanded="false"
-                                    ng-click="room.actions.crack(globals.operator)">
-                                {{globals.operator.handCard}}
-                            </button>
-                            <button type="button" class="btn btn-default btn-block mini-button card" title="{{room | json}}"
-                                    aria-haspopup="true" aria-expanded="false">
-                                <span class="glyphicon icon-pixelpickaxe" aria-hidden="true"></span>
-                            </button>
-                        </span>
+                            <!--<span class="btn-group">-->
+                                <!--<button type="button" class="btn btn-default btn-block mini-button card" title="{{room | json}}"-->
+                                        <!--aria-haspopup="true" aria-expanded="false">-->
+                                    <!--<span class="glyphicon icon-pixelpickaxe" aria-hidden="true"></span>-->
+                                <!--</button>-->
+                                <!--<button type="button" class="btn btn-default btn-block mini-button card" title="{{room | json}}"-->
+                                        <!--aria-haspopup="true" aria-expanded="false"-->
+                                        <!--ng-click="room.actions.crack(globals.operator)">-->
+                                    <!--{{globals.operator.handCard}}-->
+                                <!--</button>-->
+                                <!--<button type="button" class="btn btn-default btn-block mini-button card" title="{{room | json}}"-->
+                                        <!--aria-haspopup="true" aria-expanded="false">-->
+                                    <!--<span class="glyphicon icon-pixelpickaxe" aria-hidden="true"></span>-->
+                                <!--</button>-->
+                            <!--</span>-->
+                            <span class="btn-group">
+                                <button type="button" class="btn btn-default btn-block mini-button card" title="{{room | json}}"
+                                        aria-haspopup="true" aria-expanded="false"
+                                        ng-repeat="number in room.combo track by $index"
+                                        ng-click="markCombo(room,$index)">
+                                    <span class="glyphicon icon-password" aria-hidden="true"
+                                            ng-hide="globals.operator.handCard === number || number === 'x'"></span>
+                                    <span ng-show="globals.operator.handCard === number">
+                                        {{globals.operator.handCard}}
+                                    </span>
+                                </button>
+                            </span>
                         </div>
                     <span ng-hide="room.decompile">
                         {{room.bid.name}} - {{room.roomType}} - {{room.fireWall.hp}}<br>
