@@ -14,224 +14,25 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body ng-app="theApp">
-<div ng-controller="theController">
-    <div id="cards">
-        <button type="button" class="btn btn-default btn-block dropdown-toggle operator-card" title="{{room | json}}"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <h2 ng-bind="stuff.operator.bid.name" title="{{stuff.operator | json}}"></h2>
-            <div class="progress">
-                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{stuff.operator.bits[0]}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width: getPercent(stuff.operator.bits[0],stuff.operator.bits[1]) + '%'}">
-                    <span class="glyphicon glyphicon-bitcoin" aria-hidden="true"></span>: {{stuff.operator.bits[0]}} / {{stuff.operator.bits[1]}}
-                </div>
-            </div>
+    <div ng-controller="theController">
 
-            <div class="progress">
-                <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="{{stuff.operator.compressedData}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width: getPercent(stuff.operator.compressedData,stuff.operator.compressedDataCap) + '%'}">
-                    <span class="glyphicon glyphicon-th-large" aria-hidden="true"></span>: {{stuff.operator.compressedData}} / {{stuff.operator.compressedDataCap}}
-                </div>
-            </div>
-
-        </button>
-        <button type="button" class="btn btn-default btn-block stack-card" title="{{room | json}}"
-                ng-repeat="(iStack,stack) in registry.stacks"
-                ng-click="switchCurrentStack(iStack)" aria-haspopup="true" aria-expanded="false">
-            <h2 title="">{{stack.bid.name}}</h2>
-
-        </button>
-        <button type="button" class="btn btn-default card" title="{{room | json}}"
-                ng-click="addStack()" aria-haspopup="true" aria-expanded="false">
-            <h2 title=""><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Stack</h2>
-
-        </button>
-    </div>
-    <br>
-    <!--REGISTRY {{registry | json}}-->
-    <div class="stack-box alert alert-info" ng-show="registry.currentStack">
-
-        <h1 ng-bind="registry.currentStack.bid.name" title="{{floor | json}}"> </h1>
-
-        <div class="btn-group floor-button">
-            <button type="button" class="btn btn-default btn-block floor-button add-floor" title="{{room | json}}"
-                    ng-click="addFloor(registry.currentStack)" aria-haspopup="true" aria-expanded="false">
-                <!--<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>-->
-                <span class="dropup"><span class="caret"></span> Add Floor <span class="caret"></span></span>
-            </button>
-        </div>
-        <br>
-        <br>
-
-        <!--FLOORS-->
-        <div class="floors well well-lg" ng-repeat="floor in registry.currentStack.floors | orderBy:'-'">
-
-            <div ng-bind="floor.bid.name" title="{{floor | json}}"> </div>
-
-            <div class="btn-group" ng-repeat="room in floor.rooms">
-                <button type="button" class="btn btn-default btn-block dropdown-toggle" title="{{room | json}}"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-
-                    {{room.bid.name}} - {{room.roomType}}<br>
-
-                    <div class="progress" ng-repeat="(name,resource) in room.resources">
-                        <div class="progress-bar"
-                             ng-class="style[name].progressBarColor" role="progressbar"
-                             ng-click="collectBits(room,stuff.operator)"
-                             ng-style="{width: getPercent(resource[0],resource[1]) + '%'}"
-                             aria-valuenow="{{resource[0]}}" aria-valuemin="0" aria-valuemax="100">
-                            <span ng-class="style[name].glyphicon"  aria-hidden="true"></span>
-                            <span ng-hide="style[name].glyphicon" ng-bind="name"></span>: {{resource[0]}} / {{resource[1]}}
-                        </div>
-                    </div>
-
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a href="" ng-click="collectBits(room,stuff.operator)" ng-show="room.resources.bits">Collect Bits</a></li>
-                    <li ng-show="room.roomType == 'compressor'"><a href="" ng-click="compressData(registry.currentStack,stuff.operator)">Compress Data</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="" ng-click="changeRoomType(room,'core')">Core - (Limit 1)</a></li>
-                    <li><a href="" ng-click="changeRoomType(room,'power')">Power Generator - Generates Power</a></li>
-                    <li><a href="" ng-click="changeRoomType(room,'coolant')">Coolant Pump - Generates Coolant</a></li>
-                    <li><a href="" ng-click="changeRoomType(room,'bitMiner')">Bit Miner</a></li>
-                    <li><a href="" ng-click="changeRoomType(room,'dataMiner')">Data Miner</a></li>
-
-                    <li role="separator" class="divider"></li>
-                    <li><a href="" ng-click="changeRoomType(room,'powerCell')">Power Cell</a></li>
-                    <li><a href="" ng-click="changeRoomType(room,'coolantTank')">Coolant Tank</a></li>
-
-                </ul>
-            </div>
-
-            <!--ADD ROOM-->
-            <div class="btn-group">
-                <button type="button" class="btn btn-default btn-block" title="{{room | json}}"
-                        ng-click="addRoom(floor)" aria-haspopup="true" aria-expanded="false">
-                    <span> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Room</span>
-                </button>
-            </div>
-
-        </div>
-
-        <!--BASEMENT-->
-
-        <h1 ng-bind="'Basement'" title="{{floor | json}}"> </h1>
-
-        <!--FLOOR TEST 2-->
-        <div class="floors well well-lg" ng-repeat="floor in registry.currentStack.basement.floors">
-            <div ng-bind="floor.bid.name" title="{{floor | json}}"> </div>
-
-            <div ng-repeat="room in floor.rooms">
-                <!--PANEL-->
-                <div class="panel panel-primary room" title="{{room | json}}"
-                     aria-haspopup="true" aria-expanded="false">
-
-                    <div class="panel-heading" ng-bind="room.bid.name" title="{{floor | json}}"> </div>
-                    <!--PANEL BODY-->
-                    <div class="panel-body">
-
-                        <div ng-show="room.decompile">
-                            <div>{{room.decompile.type}} / {{room.decompile.amount}}</div>
-                            <!--<span class="btn-group">-->
-                                <!--<button type="button" class="btn btn-default btn-block mini-button card" title="{{room | json}}"-->
-                                        <!--aria-haspopup="true" aria-expanded="false">-->
-                                    <!--<span class="glyphicon icon-pixelpickaxe" aria-hidden="true"></span>-->
-                                <!--</button>-->
-                                <!--<button type="button" class="btn btn-default btn-block mini-button card" title="{{room | json}}"-->
-                                        <!--aria-haspopup="true" aria-expanded="false"-->
-                                        <!--ng-click="room.actions.crack(globals.operator)">-->
-                                    <!--{{globals.operator.handCard}}-->
-                                <!--</button>-->
-                                <!--<button type="button" class="btn btn-default btn-block mini-button card" title="{{room | json}}"-->
-                                        <!--aria-haspopup="true" aria-expanded="false">-->
-                                    <!--<span class="glyphicon icon-pixelpickaxe" aria-hidden="true"></span>-->
-                                <!--</button>-->
-                            <!--</span>-->
-                            <span class="btn-group">
-                                <button type="button" class="btn btn-default btn-block mini-button card" title="{{room | json}}"
-                                        aria-haspopup="true" aria-expanded="false"
-                                        ng-repeat="number in room.combo track by $index"
-                                        ng-click="markCombo(room,$index)">
-                                    <span class="glyphicon icon-password" aria-hidden="true"
-                                            ng-hide="globals.operator.handCard === number || number === 'x'"></span>
-                                    <span ng-show="globals.operator.handCard === number">
-                                        {{globals.operator.handCard}}
-                                    </span>
-                                </button>
-                            </span>
-                        </div>
-                    <span ng-hide="room.decompile">
-                        {{room.bid.name}} - {{room.roomType}} - {{room.fireWall.hp}}<br>
-                    </span>
-
-
-                        <div class="progress" ng-repeat="(name,resource) in room.resources">
-                            <div class="progress-bar"
-                                 ng-class="style[name].progressBarColor" role="progressbar"
-                                 ng-click="collectBits(room,stuff.operator)"
-                                 ng-style="{width: getPercent(resource[0],resource[1]) + '%'}"
-                                 aria-valuenow="{{resource[0]}}" aria-valuemin="0" aria-valuemax="100">
-                                <span ng-class="style[name].glyphicon"  aria-hidden="true"></span>
-                                <span ng-hide="style[name].glyphicon" ng-bind="name"></span>: {{resource[0]}} / {{resource[1]}}
-                            </div>
-                        </div>
-                        <!--END PANEL BODY-->
-                    </div>
-
-
-
-                </div>
-                <ul class="dropdown-menu">
-                    <li><a href="" ng-click="collectBits(room,stuff.operator)" ng-show="room.resources.bits">Collect Bits</a></li>
-                    <li ng-show="room.roomType == 'compressor'"><a href="" ng-click="compressData(registry.currentStack,stuff.operator)">Compress Data</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="" ng-click="changeRoomType(room,'core')">Core - (Limit 1)</a></li>
-                    <li><a href="" ng-click="changeRoomType(room,'power')">Power Generator - Generates Power</a></li>
-                    <li><a href="" ng-click="changeRoomType(room,'coolant')">Coolant Pump - Generates Coolant</a></li>
-                    <li><a href="" ng-click="changeRoomType(room,'bitMiner')">Bit Miner</a></li>
-                    <li><a href="" ng-click="changeRoomType(room,'dataMiner')">Data Miner</a></li>
-
-                    <li role="separator" class="divider"></li>
-                    <li><a href="" ng-click="changeRoomType(room,'powerCell')">Power Cell</a></li>
-                    <li><a href="" ng-click="changeRoomType(room,'coolantTank')">Coolant Tank</a></li>
-
-                </ul>
-            </div>
-
-            <!--ADD ROOM-->
-            <div class="btn-group">
-                <button type="button" class="btn btn-default btn-block" title="{{room | json}}"
-                        ng-click="addRoom(floor,'basement')" aria-haspopup="true" aria-expanded="false">
-                    <span> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Room</span>
-                </button>
-            </div>
-
-
-        </div>
-
-        <div class="btn-group floor-button">
-            <button type="button" class="btn btn-default btn-block floor-button add-floor" title="{{room | json}}"
-                    ng-click="addFloor(registry.currentStack,'basement')" aria-haspopup="true" aria-expanded="false">
-                <span class="caret"></span> Add Basement Level <span class="caret"></span>
-            </button>
-        </div>
 
 
     </div>
 
-</div>
+    <!--  SCRIPTS    -->
+    <!-- Placed at the end of the document so the pages load faster -->
 
-<!--  SCRIPTS    -->
-<!-- Placed at the end of the document so the pages load faster -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.min.js"></script>
+    <script src="//cdn.firebase.com/js/client/2.0.4/firebase.js"></script>
+    <script src="//cdn.firebase.com/libs/angularfire/0.9.0/angularfire.min.js"></script>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script src="//code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.min.js"></script>
-<script src="//cdn.firebase.com/js/client/2.0.4/firebase.js"></script>
-<script src="//cdn.firebase.com/libs/angularfire/0.9.0/angularfire.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="vendor/chance.js"></script>
 
-<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-<script src="vendor/chance.js"></script>
-
-<script src="js/main.js"></script>
+    <script src="js/main.js"></script>
 
 </body>
 </html>

@@ -32,9 +32,17 @@
     margin-top: 5px;
 }
 
+.nav {
+    height: 50px;
+}
+
+.nav-button {
+    height: 35px;
+}
+
 .btn-default {
-    width: 400px;
-    height: 200px;
+    /*width: 150px;*/
+    /*height: 50px;*/
 }
 
 .floor-button {
@@ -42,15 +50,25 @@
     /*height: 50px;*/
 }
 
+.width150 {
+    width:250px;
+}
+
 .add-floor {
     width :450px;
     height: 25px;
+    display: block;
 }
 
 .stack-box {
-    margin-left: 25px;
+    /*display: -webkit-flex;*/
+    /*-webkit-flex-flow: row;*/
+    /*top: 75px;*/
+    margin: 100px;
+    /*margin-top: 10px;*/
     position: relative;
-    /*float: left;*/
+    /*width: 95%;*/
+    float: left;
     font-family: 'Rajdhani', sans-serif;
 }
 
@@ -64,14 +82,33 @@
     font-family: 'Aldrich', sans-serif;
 }
 
+.progress-label {
+    float: left;
+    margin-right: 1em;
+}
+
+.float-left {
+    position: relative;
+    float: left;
+}
+
 .room {
     width: 400px;
     height: 200px;
     float: left;
     margin: 1px;
     position: relative;
+    /*display: inline-block;*/
 }
 
 h1, h2 {
     font-family: 'Rajdhani', sans-serif;
+}
+
+#cards {
+    position: fixed;
+    /*height: 300px;*/
+    background-color: #204d74;
+    padding: 10px;
+    z-index: 100;
 }
