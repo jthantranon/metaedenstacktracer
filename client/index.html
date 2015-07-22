@@ -1,22 +1,113 @@
 <html>
 <head>
     <title>MetaEden: StackTracer</title>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+    <!--<link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">-->
 
     <link href='//fonts.googleapis.com/css?family=Oswald:400,300,700' rel='stylesheet' type='text/css'>
     <link href='//fonts.googleapis.com/css?family=Rajdhani|Dosis|Economica|Tulpen+One|Russo+One|Exo|Titillium+Web|Play|Exo+2|Orbitron|Squada+One|Audiowide|Aldrich|Nova+Square|Text+Me+One' rel='stylesheet' type='text/css'>
 
     <!--BOOTSTRAP-->
-    <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="css/whhg.css">
+    <!--<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">-->
+    <!--<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap-theme.min.css">-->
+    <!--<link rel="stylesheet" href="css/whhg.css">-->
 
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/mainNew.css">
 </head>
 <body ng-app="theApp">
     <div ng-controller="theController">
 
+        <div class="homeData">
+            <div class="operator">
+                <div class="stat">Welcome 3DJesus</div>
+                <div class="stat">Bits: {{stuff.operator.bits[0]}} / {{stuff.operator.bits[1]}}</div>
+                <div class="stat">Card: {{stuff.operator.handCard}}</div>
+                <div class="cityOptions">
+                    <button class="addStack" ng-click="stuff.operator.drawCard()">Draw Card</button>
 
+                    <button class="addStack" ng-click="addStack()">Add Stack +</button>
+                    <button class="goStack"
+                            ng-repeat="(iStack,stack) in registry.stacks"
+                            ng-click="switchCurrentStack(iStack)">
+                        {{stack.bid.name}}
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="city">
+
+            <!--STACK / BUILDING-->
+            <div class="building">
+
+                <!--SKY-->
+                <div class="sky">
+                    <div class="stackOptions" ng-show="registry.currentStack">
+                        <button class="addFloor" ng-click="addFloor(registry.currentStack)">Add Floor</button>
+                    </div>
+
+                    <!--UPPER FLOORS-->
+                    <div class="floor" ng-repeat="floor in registry.currentStack.floors | orderBy:'-'">
+                        <div class="floorData">{{floor.bid.name}}</div>
+                        <div class="stackOptions" ng-show="registry.currentStack">
+                            <button class="addFloor" ng-click="addRoom(floor)">Add Room</button>
+                        </div>
+
+                        <!--UPPER ROOMS-->
+                        <div class="room" ng-repeat="room in floor.rooms">
+                            <div class="roomTitle">{{room.bid.name}} - {{room.roomType}}</div>
+                            <button class="roomButton">Type</button>
+                            <div>CHANGE TO:</div>
+                            <button class="roomButton" ng-click="changeRoomType(room,'core')">Core</button>
+                            <button class="roomButton" ng-click="changeRoomType(room,'powerCell')">Power Cell</button>
+                            <div ng-repeat="(name,resource) in room.resources">
+                                {{name}}: {{resource}}
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="foundation">Foundation</div>
+                </div>
+
+                <!--GROUND-->
+                <div class="ground">
+                    <div class="basementTop">Basement</div>
+
+                    <!--BASEMENT FLOORS-->
+                    <div class="basement" ng-repeat="floor in registry.currentStack.basement.floors">
+                        <div class="floorData">{{floor.bid.name}}</div>
+                        <div class="stackOptions" ng-show="registry.currentStack">
+                            <button class="addFloor" ng-click="addRoom(floor)">Add Room</button>
+                        </div>
+
+                        <!--BASEMENT ROOMS-->
+                        <div class="room" ng-repeat="room in floor.rooms">
+                            <div class="roomTitle">{{room.bid.name}}</div>
+                            <button class="roomButton" ng-show="arrayX(room.combo)">Type</button>
+                            <button class="roomButton"
+                                    ng-repeat="number in room.combo track by $index"
+                                    ng-click="markCombo(room,$index)"
+                                    ng-hide="number === 'x'">
+                                <!--UNKNOWN CARD-->
+                                <span ng-hide="globals.operator.handCard === number">
+                                    ?
+                                </span>
+                                <!--MATCHED CARD-->
+                                <span ng-show="globals.operator.handCard === number">
+                                    {{globals.operator.handCard}}
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="stackOptions" ng-show="registry.currentStack">
+                        <button class="addLevel"
+                                ng-click="addFloor(registry.currentStack,'basement')">
+                            Add Basement Level
+                        </button>
+                    </div>
+                    <div class="clearFix"></div>
+                </div>
+            </div>
+        </div>
 
     </div>
 

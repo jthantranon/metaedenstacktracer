@@ -67,7 +67,8 @@ function Operator(name){
     };
 
     self.research = [0,self.baseCap];
-    self.bits = [5000,self.baseCap];
+    //self.bits = [5000,self.baseCap];
+    self.bits = [25000,self.baseCap];
     self.data = [0,self.baseCap];
 
     self.researchPoints = 0;
@@ -636,6 +637,14 @@ app.controller("theController", ["$scope","$http", function ($scope,$http) {
     $scope.switchCurrentStack = switchCurrentStack;
     $scope.collectBits = collectBits;
     $scope.markCombo = markCombo;
+
+    $scope.arrayX = function(array){
+        for (var i = 0; i < array.length; i++) {
+            var obj = array[i];
+            if(obj !== 'x') return false;
+        }
+        return true;
+    };
 
     $scope.log = function(x){
         console.log(x);

@@ -1,0 +1,135 @@
+@font-face {
+    font-family: 'Squada One';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Squada One'), local('SquadaOne-Regular'), url(../fonts/squada-one.woff2), url(http://fonts.gstatic.com/s/squadaone/v5/DIbfqh10Zkwc_Qd08Y0safk_vArhqVIZ0nv9q090hN8.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+    font-family: 'Rajdhani';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Rajdhani'), local('Rajdhani-Regular'), url(../fonts/rajdhani.woff2),url(http://fonts.gstatic.com/s/rajdhani/v5/tz3398jtBIhi1rrADn6BZvesZW2xOQ-xsNqO47m55DA.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+    font-family: 'Titillium Web';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Titillium Web'), local('TitilliumWeb-Regular'), url(../fonts/titillium.woff2), url(http://fonts.gstatic.com/s/titilliumweb/v4/7XUFZ5tgS-tD6QamInJTcZSnX671uNZIV63UdXh3Mg0.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+
+body {
+    background-color:#000000;
+    background-image: url("../img/tempBG.jpg");
+    color: #DDDDEE;
+    margin:0;
+}
+
+.clearFix {
+    clear:both;
+}
+
+.homeData {
+    width:100%;
+    margin:0;
+    background-color: #67b168;
+    height: 20px;
+    color: #000000;
+    padding:8px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight:bold;
+    position: fixed;
+}
+
+.operator {
+
+}
+
+.stat {
+    float:left;
+    margin-right:30px;
+}
+
+.city {
+    /*background-color: #31b0d5;*/
+    /*opacity:0.6;*/
+    width:3500px;
+
+}
+
+.building {
+    /*background-color: #854733;*/
+    /*opacity:0.6;*/
+    padding-left:10px;
+    padding-right:10px;
+}
+
+.sky {
+    padding-top:800px;
+}
+
+.floor {
+    /*background-color: #369455;*/
+    /*opacity:0.6;*/
+    padding-left:160px;
+    background-image: url("../img/floor.png");
+    height:188px;
+    padding-top:60px;
+}
+
+.floorData {
+    /*background-color: #369455;*/
+    /*opacity:0.6;*/
+    font-family: "Titillium Web";
+    margin-top: -35px;
+}
+
+.room {
+    background-image: url("../img/room000.png");
+    /*opacity:0.8;*/
+    font-family: "Titillium Web";
+    width:315px;
+    height:170px;
+    margin-left:30px;
+    float: left;
+}
+
+.foundation {
+    clear: both;
+    background-image: url("../img/foundation.png");
+    height:164px;
+}
+
+.ground {
+    background-color: #31b0d5;
+    background-image: url('../img/meDirt.png');
+    padding-bottom:800px;
+    background-size: 20%;
+}
+
+.basementTop {
+    clear: both;
+    height:48px;
+    background-image: url("../img/basementTransition.png");
+}
+
+.basement {
+    padding-left:160px;
+    background-image: url("../img/levelBG.png");
+    height:190px;
+    padding-top:20px;
+}
+
+.level {
+    background-image: url("../img/room000.png");
+    /*opacity:0.8;*/
+    font-family: "Titillium Web";
+    width:315px;
+    height:170px;
+    margin-left:30px;
+    float: left;
+}
