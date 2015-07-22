@@ -87,6 +87,10 @@
                             <div ng-show="arrayX(room.combo)">CHANGE TO:
                                 <button class="roomButton" ng-click="changeRoomType(room,'core')">Core</button>
                                 <button class="roomButton" ng-click="changeRoomType(room,'powerCell')">Power Cell</button>
+
+                                <div ng-repeat="(name,resource) in room.resources">
+                                    {{name}}: {{resource}}
+                                </div>
                             </div>
                             <button class="roomButton"
                                     ng-repeat="number in room.combo track by $index"
