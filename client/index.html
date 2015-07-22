@@ -55,9 +55,10 @@
                         <div class="room" ng-repeat="room in floor.rooms">
                             <div class="roomTitle">{{room.bid.name}} - {{room.roomType}}</div>
                             <button class="roomButton">Type</button>
-                            <div>CHANGE TO:</div>
-                            <button class="roomButton" ng-click="changeRoomType(room,'core')">Core</button>
-                            <button class="roomButton" ng-click="changeRoomType(room,'powerCell')">Power Cell</button>
+                            <div>CHANGE TO:
+                                <button class="roomButton" ng-click="changeRoomType(room,'core')">Core</button>
+                                <button class="roomButton" ng-click="changeRoomType(room,'powerCell')">Power Cell</button>
+                            </div>
                             <div ng-repeat="(name,resource) in room.resources">
                                 {{name}}: {{resource}}
                             </div>
@@ -83,6 +84,10 @@
                         <div class="room" ng-repeat="room in floor.rooms">
                             <div class="roomTitle">{{room.bid.name}}</div>
                             <button class="roomButton" ng-show="arrayX(room.combo)">Type</button>
+                            <div ng-show="arrayX(room.combo)">CHANGE TO:
+                                <button class="roomButton" ng-click="changeRoomType(room,'core')">Core</button>
+                                <button class="roomButton" ng-click="changeRoomType(room,'powerCell')">Power Cell</button>
+                            </div>
                             <button class="roomButton"
                                     ng-repeat="number in room.combo track by $index"
                                     ng-click="markCombo(room,$index)"
