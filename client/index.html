@@ -76,12 +76,12 @@
                     <!--BASEMENT FLOORS-->
                     <div class="basement" ng-repeat="floor in registry.currentStack.basement.floors">
                         <div class="floorData">{{floor.bid.name}}</div>
-                        <div class="stackOptions" ng-show="registry.currentStack">
-                            <button class="addFloor" ng-click="addRoom(floor)">Add Room</button>
-                        </div>
+                        <!--<div class="stackOptions" ng-show="registry.currentStack">-->
+                            <!--<button class="addFloor" ng-click="addRoom(floor)">Add Room</button>-->
+                        <!--</div>-->
 
                         <!--BASEMENT ROOMS-->
-                        <div class="room" ng-repeat="room in floor.rooms">
+                        <div class="room basement-room" ng-repeat="room in floor.rooms">
                             <div class="roomTitle">{{room.bid.name}}</div>
                             <button class="roomButton" ng-show="arrayX(room.combo)">Type</button>
                             <div ng-show="arrayX(room.combo)">CHANGE TO:
@@ -105,6 +105,12 @@
                                     {{globals.operator.handCard}}
                                 </span>
                             </button>
+                        </div>
+                        <div class="room-add" ng-click="addRoom(floor)" ng-show="registry.currentStack">
+                            <span class="room-add-text">Survey Section</span>
+                            <!--<div class="stackOptions" ng-show="registry.currentStack">-->
+                                <!--<button class="addFloor" ng-click="addRoom(floor)">Add Room</button>-->
+                            <!--</div>-->
                         </div>
                     </div>
                     <div class="stackOptions" ng-show="registry.currentStack">

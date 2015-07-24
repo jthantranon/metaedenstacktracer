@@ -85,10 +85,12 @@ body {
     /*background-color: #369455;*/
     /*opacity:0.6;*/
     font-family: "Titillium Web";
-    margin-top: -35px;
+    margin-top: -15px;
 }
 
 .room {
+    display: inline-block;
+    position: relative;
     background-image: url("../img/room000.png");
     /*opacity:0.8;*/
     font-family: "Titillium Web";
@@ -96,6 +98,41 @@ body {
     height:170px;
     margin-left:30px;
     float: left;
+}
+
+.basement-room{
+    background-image: url('../img/meDirt.png');
+}
+
+.room-add {
+    /*background-image: url('../img/meDirt.png');*/
+    /*background-image: url("../img/levelBG.png");*/
+    background-image: url("../img/room001.png");
+    /*background-image: url('../img/meDirt.png');*/
+    /*background: rgba(0, 0, 0, .2);*/
+    text-align: center;
+    /*text-a*/
+    /*vertical-align: middle;*/
+    background-color: grey;
+    opacity:0.5;
+    font-family: "Titillium Web";
+    width:315px;
+    height:170px;
+    margin-left:30px;
+    float: left;
+}
+
+.room-add-text {
+    /*height: 200px;*/
+    line-height: 170px;
+    vertical-align: middle;
+}
+
+.room-add:hover {
+    /*background: rgba(0, 0, 0, 1);*/
+    opacity: 1;
+    /*background-image: url("../img/room001.png");*/
+    background-image: url('../img/meDirt.png');
 }
 
 .foundation {
