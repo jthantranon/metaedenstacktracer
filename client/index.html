@@ -48,19 +48,21 @@
                     <div class="floor" ng-repeat="floor in registry.currentStack.floors | orderBy:'-'">
                         <div class="floorData">{{floor.bid.name}}</div>
                         <div class="stackOptions" ng-show="registry.currentStack">
-                            <button class="addFloor" ng-click="addRoom(floor)">Add Room</button>
+                            <button class="addFloor addRoom" ng-click="addRoom(floor)">Add Room</button>
                         </div>
 
                         <!--UPPER ROOMS-->
                         <div class="room" ng-repeat="room in floor.rooms">
                             <div class="roomTitle">{{room.bid.name}} - {{room.roomType}}</div>
-                            <button class="roomButton">Type</button>
-                            <div>CHANGE TO:
+                            <button class="roomButton roomTypeButton">Type</button>
+                            <div class="roomChangeButtons">CHANGE TO:
                                 <button class="roomButton" ng-click="changeRoomType(room,'core')">Core</button>
                                 <button class="roomButton" ng-click="changeRoomType(room,'powerCell')">Power Cell</button>
                             </div>
-                            <div ng-repeat="(name,resource) in room.resources">
-                                {{name}}: {{resource}}
+                            <div class="roomStats">
+                                <div class="roomStatBox" ng-repeat="(name,resource) in room.resources">
+                                    {{name}}: {{resource}}
+                                </div>
                             </div>
 
                         </div>
@@ -83,12 +85,13 @@
                         <!--BASEMENT ROOMS-->
                         <div class="room basement-room" ng-repeat="room in floor.rooms">
                             <div class="roomTitle">{{room.bid.name}}</div>
-                            <button class="roomButton" ng-show="arrayX(room.combo)">Type</button>
-                            <div ng-show="arrayX(room.combo)">CHANGE TO:
+                            <button class="roomButton roomTypeButton" ng-show="arrayX(room.combo)">Type</button>
+                            <div class="roomChangeButtons" ng-show="arrayX(room.combo)">CHANGE TO:
                                 <button class="roomButton" ng-click="changeRoomType(room,'core')">Core</button>
                                 <button class="roomButton" ng-click="changeRoomType(room,'powerCell')">Power Cell</button>
-
-                                <div ng-repeat="(name,resource) in room.resources">
+                            </div>
+                            <div class="roomStats">
+                                <div class="roomStatBox" ng-repeat="(name,resource) in room.resources">
                                     {{name}}: {{resource}}
                                 </div>
                             </div>
@@ -110,6 +113,13 @@
                             <span class="room-add-text">Survey Section</span>
                             <!--<div class="stackOptions" ng-show="registry.currentStack">-->
                                 <!--<button class="addFloor" ng-click="addRoom(floor)">Add Room</button>-->
+                            <!--</div>-->
+                        </div>
+                        <!-- CK - CLASS STATE FOR ROOM AFTER DECRYPTION -->
+                        <div class="room basement-room basementDecrypted" ng-click="addRoom(floor)" ng-show="registry.currentStack">
+                            <span class="room-add-text">Survey Section</span>
+                            <!--<div class="stackOptions" ng-show="registry.currentStack">-->
+                            <!--<button class="addFloor" ng-click="addRoom(floor)">Add Room</button>-->
                             <!--</div>-->
                         </div>
                     </div>

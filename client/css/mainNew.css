@@ -43,6 +43,7 @@ body {
     font-family: 'Rajdhani', sans-serif;
     font-weight:bold;
     position: fixed;
+    z-index:5;
 }
 
 .operator {
@@ -100,20 +101,78 @@ body {
     float: left;
 }
 
+.room button {
+    font-family: "Titillium Web";
+    color:#AAAAAA;
+    font-size: 12px;
+    text-transform: uppercase;
+    background-color: #333333;
+    border-color:#555555;
+}
+
+.roomTitle, .basement-room .roomTitle {
+    font-family: "Titillium Web";
+    color:#000000;
+    font-size: 10px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.roomTypeButton {
+    position:absolute;
+    top:25px;
+    left:135px;
+    margin-left:2px;
+}
+
+.roomChangeButtons {
+    position:absolute;
+    margin-top:40px;
+    margin-left:20px;
+}
+
+.roomStats {
+    position:absolute;
+    font-family: "Titillium Web";
+    color:#000000;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-top:80px;
+    width:100%;
+}
+
+.roomStatBox {
+    text-align: center;
+}
+
 .basement-room{
     background-image: url('../img/meDirt.png');
+    border:1px black solid;
+}
+
+.basementDecrypted {
+    background-image: url('../img/room001.png');
+    display: inline-block;
+    position: relative;
+    background-image: url("../img/room000.png");
+    /*opacity:0.8;*/
+    font-family: "Titillium Web";
+    width:315px;
+    height:170px;
+    margin-left:30px;
+    float: left;
 }
 
 .room-add {
     /*background-image: url('../img/meDirt.png');*/
     /*background-image: url("../img/levelBG.png");*/
-    background-image: url("../img/room001.png");
+    background-image: url("../img/grid10.png");
     /*background-image: url('../img/meDirt.png');*/
     /*background: rgba(0, 0, 0, .2);*/
     text-align: center;
     /*text-a*/
     /*vertical-align: middle;*/
-    background-color: grey;
+    border:1px black solid;
     opacity:0.5;
     font-family: "Titillium Web";
     width:315px;
@@ -126,19 +185,58 @@ body {
     /*height: 200px;*/
     line-height: 170px;
     vertical-align: middle;
+
 }
 
 .room-add:hover {
     /*background: rgba(0, 0, 0, 1);*/
-    opacity: 1;
+    opacity: .7;
     /*background-image: url("../img/room001.png");*/
     background-image: url('../img/meDirt.png');
+}
+
+.floorData {
+    float:left;
+    margin-left:-30px;
+    margin-top:0px;
+    border:1px;
+    width:200px;
+    height:100px;
+    background-image:url("../img/concreteSmall.jpg");
+    background-size: 100%;
+    color: #BBBBBB;
+    text-shadow: 0px 0px 4px #000000, 0px -4px 4px #000000, 0px -8px 6px #000000;
+    font-family: "Titillium Web";
+    font-size: 20px;
+    text-transform: uppercase;
+    text-align:center;
+    padding-top:70px;
+}
+
+.addRoom {
+    position:absolute;
+    margin-left:-140px;
+    margin-top:10px;
+    font-family: "Titillium Web";
+    color:#AAAAAA;
+    font-size: 12px;
+    text-transform: uppercase;
+    background-color: #333333;
+    border-color:#555555;
 }
 
 .foundation {
     clear: both;
     background-image: url("../img/foundation.png");
-    height:164px;
+    height:40px;
+    color: #669999;
+    padding-top:124px;
+    padding-left:10px;
+    text-shadow: 0px 0px 4px #000000, 0px -4px 4px #000000;
+    font-family: "Titillium Web";
+    font-style: italic;
+    font-size: 20px;
+    text-transform: uppercase;
 }
 
 .ground {
@@ -150,8 +248,16 @@ body {
 
 .basementTop {
     clear: both;
-    height:48px;
+    height:40px;
     background-image: url("../img/basementTransition.png");
+    color: #666666;
+    padding-top:8px;
+    padding-left:10px;
+    text-shadow: 0px 0px 4px #000000, 0px -4px 4px #000000, 0px -8px 6px #000000;
+    font-family: "Titillium Web";
+    font-style: italic;
+    font-size: 20px;
+    text-transform: uppercase;
 }
 
 .basement {
