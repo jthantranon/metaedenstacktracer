@@ -467,6 +467,15 @@ function changeRoomType(room,type){
 
                 room.pullTypes.push('coolant');
                 break;
+            case 'bitBank':
+                delete room.resources.heat;
+                delete room.resources.power;
+                delete room.resources.coolant;
+
+                room.resources.bits = [0,10000];
+
+                room.pullTypes.push('bits');
+                break;
         }
 
     }

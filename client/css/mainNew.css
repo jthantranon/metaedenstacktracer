@@ -101,7 +101,7 @@ body {
     float: left;
 }
 
-.room button {
+.roomButton {
     font-family: "Titillium Web";
     color:#AAAAAA;
     font-size: 12px;
@@ -130,10 +130,12 @@ body {
 
 .roomChangeButtons {
     position:absolute;
-    margin-top:40px;
+    margin-top:30px;
     margin-left:20px;
     z-index:5;
 }
+
+
 
 .roomStats {
     position:absolute;
