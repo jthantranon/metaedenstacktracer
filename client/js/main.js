@@ -170,7 +170,20 @@ function cycleCostPay(generator){
     }
 }
 
-function transfer(resource,source,destination){
+function reverseDirection(direction){
+    switch(direction){
+        case 'left':
+            return 'right';
+        case 'right':
+            return 'left';
+        case 'up':
+            return 'down';
+        case 'down':
+            return 'up'
+    }
+}
+
+function transfer(resource,source,destination,direction){
     var sourceValue = source.resources[resource] ? source.resources[resource][0] : false;
 
     if(sourceValue){
@@ -185,8 +198,26 @@ function transfer(resource,source,destination){
         var destinationAvailableSpace = destinationMax - destinationValue;
         var actualTransferAmount = attemptedTransferAmount <= destinationAvailableSpace ? attemptedTransferAmount : destinationAvailableSpace;
 
-        source.resources[resource][0] -= actualTransferAmount;
-        destination.resources[resource][0] += actualTransferAmount;
+        if(actualTransferAmount > 0){
+            //console.log(direction);
+            source.resources[resource][0] -= actualTransferAmount;
+            destination.resources[resource][0] += actualTransferAmount;
+
+            destination.logistics[direction][resource].active = true;
+            source.logistics[reverseDirection(direction)][resource].active = true;
+        } else {
+            destination.logistics[direction][resource].active = false;
+            source.logistics[direction][resource].active = false;
+        }
+
+        if(destination.resources[resource][0] === destination.resources[resource][1]){
+            destination.logistics[direction][resource].active = false;
+            source.logistics[reverseDirection(direction)][resource].active = false;
+        }
+
+    } else {
+        //destination.logistics[direction][resource].active = false;
+        //source.logistics[direction][resource].active = false;
     }
 }
 
@@ -197,7 +228,7 @@ function pullIn(origin){
 
     if(pullTypesLength > 0){
         var neighbors = getNeighbors(origin.iStack,origin.iFloor,origin.iRoom);
-        if(neighbors     ){
+        if(neighbors){
             for(var i = 0; i < pullTypesLength; ++i){
                 var type = origin.pullTypes[i];
 
@@ -206,7 +237,12 @@ function pullIn(origin){
                         var neighbor = neighbors[direction];
                         if(neighbor){
                             if(neighbor.resources[type] && origin.resources[type]){
-                                if(neighbor.resources[type][0]/neighbor.resources[type][1] > origin.resources[type][0]/origin.resources[type][1]) transfer(type,neighbor,origin);
+                                if(neighbor.resources[type][0]/neighbor.resources[type][1] > origin.resources[type][0]/origin.resources[type][1]){
+                                    transfer(type,neighbor,origin,direction);
+                                } else {
+                                    //origin.logistics[direction][type].active = false;
+                                    //neighbor.logistics[direction][type].active = false;
+                                }
                             }
 
                         }
@@ -283,6 +319,30 @@ function Room(name,isBasement){
     self.iStack = '';
     self.iFloor = '';
     self.iRoom = '';
+
+    var State = function(){
+        return {
+            enabled: false,
+            active: false
+        }
+    };
+
+    var logisticsSide = function(){
+        return {
+            items:  new State(),
+            bits: new State(),
+            power: new State(),
+            coolant: new State(),
+            heat: new State()
+        }
+    };
+
+    self.logistics = {
+        left: new logisticsSide(),
+        right: new logisticsSide(),
+        up: new logisticsSide(),
+        down: new logisticsSide()
+    };
 
     self.resources = {};
 
@@ -395,7 +455,7 @@ function changeRoomType(room,type){
                 delete room.resources.heat;
                 delete room.resources.coolant;
 
-                room.resources.power[1] = 10000;
+                room.resources.power[1] = 250;
 
                 room.pullTypes.push('power');
                 break;
@@ -627,7 +687,24 @@ app.controller("theController", ["$scope","$http", function ($scope,$http) {
     $scope.testClick = function(){
         console.log("I clicked the thing!");
         console.log(this.room);
-    }
+    };
+
+    $scope.returnActive = function(){
+        return 'logiActive';
+    };
+
+    $scope.isActive = function(type,direction){
+        var room = this.room;
+        var active = this.room.logistics[direction][type] ? this.room.logistics[direction][type].active : false;
+
+        if(active){
+            return 'logiActive';
+        } else {
+            return '';
+        }
+
+    };
+
     $scope.stuff = window.ClientObjects;
     $scope.globals = window.ClientObjects;
     $scope.registry = REGISTRY;
