@@ -97,7 +97,7 @@ body {
     font-family: "Titillium Web";
     width:315px;
     height:170px;
-    margin-left:30px;
+    margin-left:50px;
     float: left;
 }
 
@@ -108,6 +108,7 @@ body {
     text-transform: uppercase;
     background-color: #333333;
     border-color:#555555;
+    z-index:5;
 }
 
 .roomTitle, .basement-room .roomTitle {
@@ -116,6 +117,7 @@ body {
     font-size: 10px;
     text-transform: uppercase;
     text-align: center;
+    z-index:5;
 }
 
 .roomTypeButton {
@@ -123,12 +125,14 @@ body {
     top:25px;
     left:135px;
     margin-left:2px;
+    z-index:5;
 }
 
 .roomChangeButtons {
     position:absolute;
     margin-top:40px;
     margin-left:20px;
+    z-index:5;
 }
 
 .roomStats {
@@ -139,10 +143,12 @@ body {
     text-transform: uppercase;
     margin-top:80px;
     width:100%;
+    z-index:5;
 }
 
 .roomStatBox {
     text-align: center;
+    z-index:5;
 }
 
 .basement-room{
@@ -291,4 +297,88 @@ body {
     height:170px;
     margin-left:30px;
     float: left;
+}
+
+
+.roomLogistics {
+    position:absolute;
+    width:365px;
+    height:220px;
+    margin-top:-40px;
+    margin-left:-25px;
+    z-index:1;
+    opacity:0;
+
+}
+
+.roomLogistics:hover {
+    opacity:1;
+}
+
+.roomLogiConnLeft {
+    position:absolute;
+    width:25px;
+    height:125px;
+    margin-top:50px;
+}
+
+.roomLogiConnTop {
+    position:absolute;
+    width:125px;
+    height:25px;
+    margin-left:120px;
+}
+
+.roomLogiConnRight {
+    position:absolute;
+    width:25px;
+    height:125px;
+    margin-top:50px;
+    margin-left:340px;
+}
+
+.roomLogiConnBottom {
+    position:absolute;
+    width:125px;
+    height:25px;
+    margin-left:120px;
+    margin-top:195px;
+}
+
+.roomLogiConnTop .logiItemsDuct { width:25px; height:25px; background-image:url("../img/logiPipesItemsVert.png"); display:inline-block; }
+.roomLogiConnRight .logiItemsDuct { width:25px; height:25px; background-image:url("../img/logiPipesItems.png"); }
+.roomLogiConnBottom .logiItemsDuct { width:25px; height:25px; background-image:url("../img/logiPipesItemsVert.png"); display:inline-block; }
+.roomLogiConnLeft .logiItemsDuct { width:25px; height:25px; background-image:url("../img/logiPipesItems.png"); }
+
+.roomLogiConnTop .logiBitsDuct { width:25px; height:25px; background-image:url("../img/logiPipesBitsVert.png"); display:inline-block;}
+.roomLogiConnRight .logiBitsDuct { width:25px; height:25px; background-image:url("../img/logiPipesBits.png"); }
+.roomLogiConnBottom .logiBitsDuct { width:25px; height:25px; background-image:url("../img/logiPipesBitsVert.png"); display:inline-block; }
+.roomLogiConnLeft .logiBitsDuct { width:25px; height:25px; background-image:url("../img/logiPipesBits.png"); }
+
+.roomLogiConnTop .logiEnergyDuct { width:25px; height:25px; background-image:url("../img/logiPipesEnergyVert.png"); display:inline-block; }
+.roomLogiConnRight .logiEnergyDuct { width:25px; height:25px; background-image:url("../img/logiPipesEnergy.png"); }
+.roomLogiConnBottom .logiEnergyDuct { width:25px; height:25px; background-image:url("../img/logiPipesEnergyVert.png"); display:inline-block; }
+.roomLogiConnLeft .logiEnergyDuct { width:25px; height:25px; background-image:url("../img/logiPipesEnergy.png"); }
+
+.roomLogiConnTop .logiWaterDuct { width:25px; height:25px; background-image:url("../img/logiPipesWaterVert.png"); display:inline-block; }
+.roomLogiConnRight .logiWaterDuct { width:25px; height:25px; background-image:url("../img/logiPipesWater.png"); }
+.roomLogiConnBottom .logiWaterDuct { width:25px; height:25px; background-image:url("../img/logiPipesWaterVert.png"); display:inline-block; }
+.roomLogiConnLeft .logiWaterDuct { width:25px; height:25px; background-image:url("../img/logiPipesWater.png"); }
+
+.roomLogiConnTop .logiHeatDuct { width:25px; height:25px; background-image:url("../img/logiPipesHeatVert.png"); display:inline-block; }
+.roomLogiConnRight .logiHeatDuct { width:25px; height:25px; background-image:url("../img/logiPipesHeat.png"); }
+.roomLogiConnBottom .logiHeatDuct { width:25px; height:25px; background-image:url("../img/logiPipesHeatVert.png"); display:inline-block; }
+.roomLogiConnLeft .logiHeatDuct { width:25px; height:25px; background-image:url("../img/logiPipesHeat.png"); }
+
+
+@keyframes logiActiveAnim {
+    0% {background-color: rgba(255,255,255,0);}
+    50% {background-color: rgba(255,255,255,1);}
+    100% {background-color: rgba(255,255,255,0);}
+}
+
+.logiActive {
+    animation-name:logiActiveAnim;
+    animation-duration:2s;
+    animation-iteration-count:infinite;
 }

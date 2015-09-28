@@ -624,6 +624,10 @@ function markCombo(room,index){
 window.ClientObjects = new EdenObjects();
 var app = angular.module("theApp", []);
 app.controller("theController", ["$scope","$http", function ($scope,$http) {
+    $scope.testClick = function(){
+        console.log("I clicked the thing!");
+        console.log(this.room);
+    }
     $scope.stuff = window.ClientObjects;
     $scope.globals = window.ClientObjects;
     $scope.registry = REGISTRY;
