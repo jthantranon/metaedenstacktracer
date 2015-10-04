@@ -108,7 +108,7 @@ body {
     text-transform: uppercase;
     background-color: #333333;
     border-color:#555555;
-    z-index:5;
+    z-index:9001;
 }
 
 .roomTitle, .basement-room .roomTitle {
@@ -154,8 +154,9 @@ body {
 }
 
 .basement-room{
-    background-image: url('../img/meDirt.png');
-    border:1px black solid;
+    /*background-image: url('../img/meDirt.png');*/
+    background-image: url("../img/room000.png");
+    /*border:1px black solid;*/
 }
 
 .basementDecrypted {
@@ -273,7 +274,7 @@ body {
     padding-left:160px;
     /*background-image: url("../img/levelBG.png");*/
     background-image: url("../img/scaffold48.png");
-    height:190px;
+    height:200px;
     padding-top:20px;
 }
 
@@ -305,14 +306,27 @@ body {
 
 
 .roomLogistics {
+     position:absolute;
+     width:365px;
+     height:220px;
+     margin-top:-40px;
+     margin-left:-25px;
+     z-index:1;
+     /*opacity:0;*/
+     opacity:1;
+     pointer-events:none;
+
+ }
+
+.basement-room .roomLogistics {
     position:absolute;
     width:365px;
     height:220px;
-    margin-top:-40px;
+    margin-top:-65px;
     margin-left:-25px;
     z-index:1;
-    /*opacity:0;*/
     opacity:1;
+    pointer-events:none;
 
 }
 
