@@ -401,3 +401,35 @@ body {
     animation-duration:2s;
     animation-iteration-count:infinite;
 }
+
+
+/* GRID STYLES */
+/* ----------- */
+.gridWrapper {
+    background:black;
+}
+
+.gridRow {
+}
+
+.gridCell {
+    margin:20px;
+    display:inline-block;
+    width:60px;
+    height:60px;
+    background: radial-gradient(ellipse at center, rgba(255,255,255,1) 0%, rgba(196,196,196,1) 100%);
+    border:solid grey 2px;
+    color:darkgrey;
+    text-align:center;
+    line-height:60px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight:bold;
+}
+
+.gridCell:hover {
+    background: radial-gradient(ellipse at center, rgba(255,175,75,1) 0%, rgba(255,146,10,1) 100%);
+}
+
+.gridOn {
+    background: radial-gradient(ellipse at center, rgba(210,255,82,1) 0%, rgba(145,232,66,1) 100%);
+}
