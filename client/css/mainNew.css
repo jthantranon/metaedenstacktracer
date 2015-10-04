@@ -248,7 +248,7 @@ body {
 }
 
 .ground {
-    background-color: #31b0d5;
+    /*background-color: #31b0d5;*/
     background-image: url('../img/meDirt.png');
     padding-bottom:800px;
     background-size: 20%;
@@ -257,11 +257,12 @@ body {
 .basementTop {
     clear: both;
     height:40px;
-    background-image: url("../img/basementTransition.png");
+    /*background-image: url("../img/basementTransition.png");*/
+    background-image: url("../img/scaffoldSolid48.jpg");
     color: #666666;
     padding-top:8px;
     padding-left:10px;
-    text-shadow: 0px 0px 4px #000000, 0px -4px 4px #000000, 0px -8px 6px #000000;
+    text-shadow: 0px 0px 2px #000000, 0px -2px 2px #000000, 0px -4px 4px #000000;
     font-family: "Titillium Web";
     font-style: italic;
     font-size: 20px;
@@ -270,7 +271,8 @@ body {
 
 .basement {
     padding-left:160px;
-    background-image: url("../img/levelBG.png");
+    /*background-image: url("../img/levelBG.png");*/
+    background-image: url("../img/scaffold48.png");
     height:190px;
     padding-top:20px;
 }
